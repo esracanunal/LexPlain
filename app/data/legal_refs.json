@@ -1,0 +1,164 @@
+{
+  "TBK_301": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 301",
+    "baslik": "Kiraya verenin teslim ve ayıptan arındırma borcu",
+    "ozet": "Kiraya veren, kiralananı kararlaştırılan tarihte kullanıma elverişli şekilde teslim etmek ve sözleşme süresince bu durumda bulundurmakla yükümlüdür. Konut kiralarında bu borç kiracı aleyhine değiştirilemez."
+  },
+  "TBK_302": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 302",
+    "baslik": "Yan giderler ve vergiler",
+    "ozet": "Kiralananla ilgili zorunlu vergi ve benzeri yükümlülükler kural olarak kiraya verene aittir."
+  },
+  "TBK_317": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 317",
+    "baslik": "Temizlik ve bakım giderleri",
+    "ozet": "Kiracı yalnızca olağan kullanım için gerekli temizlik ve küçük bakım giderlerine katlanır. Büyük onarımlar kural olarak kiraya verenin sorumluluğundadır."
+  },
+  "TBK_325": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 325",
+    "baslik": "Kiralananın erken geri verilmesi",
+    "ozet": "Kiracı süresinden önce çıkarsa, kiralananın benzer koşullarla yeniden kiraya verilebileceği makul süre boyunca kirayı ödemekle yükümlüdür. Kiracı uygun ve ödeme gücüne sahip yeni bir kiracı önerirse bu sorumluluk sona erebilir."
+  },
+  "TBK_334": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 334",
+    "baslik": "Kiralananın geri verilmesi",
+    "ozet": "Kiracı, olağan kullanımdan doğan eskimelerden sorumlu değildir. Sözleşmeye aykırı kullanımdan doğan zararlar dışında, kiracının önceden tazminat ödemeyi üstlendiği anlaşmalar geçersizdir."
+  },
+  "TBK_342": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 342",
+    "baslik": "Güvence bedeli (depozito)",
+    "ozet": "Konut ve çatılı işyeri kiralarında güvence bedeli üç aylık kirayı aşamaz. Para olarak verilmişse kiracı adına vadeli tasarruf hesabına yatırılır; kiraya veren kiracının rızası olmadan bu parayı çekemez."
+  },
+  "TBK_344": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 344",
+    "baslik": "Kira bedelinin belirlenmesi",
+    "ozet": "Yenilenen kira dönemlerinde kira artışı, bir önceki kira yılının TÜFE on iki aylık ortalamalara göre değişim oranını geçemez. Bu oranı aşan artış anlaşmaları aşan kısım bakımından geçersizdir."
+  },
+  "TBK_346": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 346",
+    "baslik": "Kiracı aleyhine düzenleme yasağı",
+    "ozet": "Kiracıya kira bedeli ve yan giderler dışında başka bir ödeme yükümlülüğü getirilemez. Özellikle kiranın zamanında ödenmemesi hâlinde ceza koşulu ödeneceğine veya sonraki kira bedellerinin muaccel olacağına ilişkin anlaşmalar geçersizdir."
+  },
+  "TBK_347": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 347",
+    "baslik": "Konut kirasında süre ve fesih",
+    "ozet": "Belirli süreli konut kirasında kiracı, süre bitiminden en az 15 gün önce bildirim yapmazsa sözleşme aynı koşullarla bir yıl uzar. Kiraya veren, yalnızca sürenin bitmesine dayanarak sözleşmeyi sona erdiremez; on yıllık uzama süresi dolduktan sonra fesih hakkı doğar."
+  },
+  "TBK_352": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 352",
+    "baslik": "Tahliye taahhüdü",
+    "ozet": "Yazılı tahliye taahhüdü ancak kiralananın tesliminden sonra verilmişse geçerlidir. Sözleşmeyle aynı anda imzalatılan tahliye taahhüdü, Yargıtay uygulamasında geçersiz sayılmaktadır."
+  },
+  "TBK_20_25": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 20–25",
+    "baslik": "Genel işlem koşulları",
+    "ozet": "Karşı tarafa önceden tek taraflı hazırlanmış standart maddeler; karşı taraf bunlardan haberdar edilmediyse yazılmamış sayılır, belirsizse hazırlayan aleyhine yorumlanır ve dürüstlük kuralına aykırı aleyhe hükümler konulamaz."
+  },
+  "TBK_115": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 115",
+    "baslik": "Sorumsuzluk anlaşması",
+    "ozet": "Ağır kusurdan doğan sorumluluktan önceden kurtulmayı sağlayan anlaşmalar kesin olarak hükümsüzdür."
+  },
+  "TBK_182": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 182",
+    "baslik": "Ceza koşulunun miktarı",
+    "ozet": "Hâkim, aşırı (fahiş) gördüğü ceza koşulunu kendiliğinden indirir."
+  },
+  "TKHK_5": {
+    "kanun": "6502 sayılı Tüketicinin Korunması Hakkında Kanun",
+    "madde": "m. 5",
+    "baslik": "Haksız şartlar",
+    "ozet": "Tüketiciyle müzakere edilmeden sözleşmeye konulan ve dürüstlük kuralına aykırı biçimde tüketici aleyhine dengesizlik yaratan şartlar haksız şarttır ve kesin hükümsüzdür."
+  },
+  "TKHK_48": {
+    "kanun": "6502 sayılı Tüketicinin Korunması Hakkında Kanun",
+    "madde": "m. 48",
+    "baslik": "Mesafeli sözleşmelerde cayma hakkı",
+    "ozet": "İnternet, telefon gibi mesafeli kurulan sözleşmelerde tüketici, 14 gün içinde gerekçe göstermeden ve cezai şart ödemeden cayma hakkına sahiptir."
+  },
+  "ABONELIK_YON": {
+    "kanun": "Abonelik Sözleşmeleri Yönetmeliği",
+    "madde": "Fesih hükümleri",
+    "baslik": "Abonelikte fesih",
+    "ozet": "Tüketici belirsiz süreli abonelik sözleşmesini istediği zaman feshedebilir. Fesih, en az sözleşmenin kurulduğu yöntem kadar kolay bir yolla yapılabilmelidir."
+  },
+  "HMK_18": {
+    "kanun": "6100 sayılı Hukuk Muhakemeleri Kanunu",
+    "madde": "m. 17–18",
+    "baslik": "Yetki sözleşmesi",
+    "ozet": "Yetkili mahkemeyi belirleyen sözleşme maddeleri yalnızca tacirler veya kamu tüzel kişileri arasında geçerlidir. Tüketici uyuşmazlıklarında tüketici kendi yerleşim yerindeki tüketici mahkemesinde dava açabilir (TKHK m. 73)."
+  },
+  "KVKK_5": {
+    "kanun": "6698 sayılı Kişisel Verilerin Korunması Kanunu",
+    "madde": "m. 5 ve 9",
+    "baslik": "Kişisel verilerin işlenmesi ve aktarılması",
+    "ozet": "Kişisel veriler kanundaki şartlar dışında ancak açık rızayla işlenebilir. Açık rıza, belirli bir konuya ilişkin, bilgilendirmeye dayanan ve özgür iradeyle verilmiş olmalıdır; genel ve her şeyi kapsayan rıza maddeleri tartışmalıdır."
+  },
+  "TBK_583": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 583–584",
+    "baslik": "Kefalet sözleşmesinin şekli",
+    "ozet": "Kefalet yazılı yapılmalı; kefilin sorumlu olacağı azami miktar, kefalet tarihi ve müteselsil kefil ise bu sıfat kefilin kendi el yazısıyla belirtilmelidir. Evli kişinin kefil olması kural olarak eşinin yazılı rızasına bağlıdır."
+  },
+  "IK_15": {
+    "kanun": "4857 sayılı İş Kanunu",
+    "madde": "m. 15",
+    "baslik": "Deneme süresi",
+    "ozet": "İş sözleşmesine konan deneme süresi en çok iki ay olabilir; yalnızca toplu iş sözleşmesiyle dört aya kadar uzatılabilir. Daha uzun yazılsa bile süre dolunca deneme süresi biter."
+  },
+  "IK_22": {
+    "kanun": "4857 sayılı İş Kanunu",
+    "madde": "m. 22",
+    "baslik": "Çalışma koşullarında esaslı değişiklik",
+    "ozet": "İşveren görev yeri, görev veya çalışma koşullarında esaslı değişikliği ancak yazılı bildirimle yapabilir; işçinin altı iş günü içinde yazılı olarak kabul etmediği değişiklik onu bağlamaz."
+  },
+  "IK_38": {
+    "kanun": "4857 sayılı İş Kanunu",
+    "madde": "m. 38",
+    "baslik": "Ücret kesme cezası",
+    "ozet": "İşveren yalnızca iş sözleşmesinde veya toplu sözleşmede gösterilen sebeplerle ücret kesme cezası verebilir; kesinti bir ayda iki günlük ücreti aşamaz ve sebebiyle birlikte işçiye hemen bildirilmelidir."
+  },
+  "IK_41": {
+    "kanun": "4857 sayılı İş Kanunu",
+    "madde": "m. 41 ve 63",
+    "baslik": "Çalışma süresi ve fazla çalışma",
+    "ozet": "Haftalık çalışma süresi en çok 45 saattir. Bunu aşan her saat için en az yüzde elli zamlı ücret ödenir (ya da işçi isterse serbest zaman verilir); yıllık fazla çalışma 270 saati aşamaz."
+  },
+  "IK_53": {
+    "kanun": "4857 sayılı İş Kanunu",
+    "madde": "m. 53",
+    "baslik": "Yıllık ücretli izin",
+    "ozet": "Deneme süresi dahil en az bir yıl çalışan işçi yıllık ücretli izne hak kazanır. Yıllık ücretli izin hakkından vazgeçilemez; izin, sözleşme sürerken paraya çevrilemez."
+  },
+  "IK_KIDEM": {
+    "kanun": "1475 sayılı İş Kanunu",
+    "madde": "m. 14",
+    "baslik": "Kıdem tazminatı",
+    "ozet": "En az bir yıl çalışmış işçi, kanunda sayılan hâllerde işten ayrıldığında kıdem tazminatına hak kazanır. Bu hak kanundan doğar; işe girerken imzalanan bir maddeyle önceden ortadan kaldırılamaz."
+  },
+  "TBK_420": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 420",
+    "baslik": "Hizmet sözleşmesinde ceza koşulu",
+    "ozet": "Hizmet sözleşmelerine yalnızca işçi aleyhine konulan ceza koşulu geçersizdir. Karşılıklı ceza koşulunda işçinin yükü işverenin yükünü aşamaz. Rekabet yasağına bağlanan ceza koşulu bu kuralın istisnasıdır."
+  },
+  "TBK_445": {
+    "kanun": "6098 sayılı Türk Borçlar Kanunu",
+    "madde": "m. 444–446",
+    "baslik": "Rekabet yasağı",
+    "ozet": "Rekabet yasağı yazılı olmalı; işçinin ekonomik geleceğini hakkaniyete aykırı biçimde tehlikeye düşürecek yer, zaman ve iş türü sınırlamaları içeremez ve süresi özel durumlar dışında iki yılı aşamaz. Hâkim aşırı yasağı daraltabilir."
+  }
+}
