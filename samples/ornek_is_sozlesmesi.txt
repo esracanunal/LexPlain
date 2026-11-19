@@ -1,0 +1,27 @@
+BELİRSİZ SÜRELİ İŞ SÖZLEŞMESİ
+
+İşveren: Örnek Yazılım Teknolojileri A.Ş.
+İşçi: Deniz Aydın, T.C. Kimlik No: 10000000146, e-posta: deniz.aydin@example.com
+İşe Başlama Tarihi: 01.12.2026
+Görevi: Junior Yazılım Geliştirici
+Aylık Brüt Ücret: 45.000 TL (her ayın son iş günü banka hesabına ödenir)
+
+MADDE 1 - İşçi, işe başlama tarihinden itibaren 4 (dört) aylık deneme süresine tabidir. Bu süre içinde işveren sözleşmeyi bildirimsiz ve tazminatsız feshedebilir.
+
+MADDE 2 - Haftalık çalışma süresi 50 saattir. Fazla mesai ücrete dahil olup ayrıca ödenmez.
+
+MADDE 3 - İşveren, işçiyi gerekli gördüğü hallerde başka bir şehirdeki şubesinde veya farklı bir görevde çalıştırabilir; işçi bunu şimdiden kabul eder.
+
+MADDE 4 - İşçi, iş sözleşmesinin herhangi bir nedenle sona ermesinden itibaren 3 yıl boyunca Türkiye genelinde yazılım sektöründe faaliyet gösteren rakip firmalarda çalışmayacaktır.
+
+MADDE 5 - Sözleşmeyi süresinden önce fesheden işçi, işverene 6 aylık brüt ücreti tutarında cezai şart öder.
+
+MADDE 6 - İşveren tarafından sağlanan eğitim ve sertifika programlarının giderleri, işçinin 2 yıl dolmadan ayrılması halinde tamamen işçi tarafından iade edilir.
+
+MADDE 7 - İşverenin uygun göreceği hallerde işçinin maaşından kesinti yapılabilir.
+
+MADDE 8 - İşçi, yıllık ücretli izin hakkının ücrete dahil olduğunu ve ayrıca izin kullanmayacağını kabul eder.
+
+MADDE 9 - İşçi, sözleşmenin sona ermesi halinde kıdem tazminatı talep etmeyeceğini peşinen kabul eder.
+
+MADDE 10 - İşçi, görevi sırasında öğrendiği ticari sırları ve müşteri bilgilerini gizli tutar.
