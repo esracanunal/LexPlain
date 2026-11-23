@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LexPlain: İmzalamadan önce sözleşmenizi anlayın</title>
+  <meta name="description" content="Kira, iş ve abonelik sözleşmelerinizdeki dikkat edilmesi gereken maddeleri ve size etkilerini sade Türkçeyle görün.">
+  <meta name="theme-color" content="#F6F4EF">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F4C4A'/%3E%3Cpath d='M10 8v16h12' stroke='%23fff' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Dosya doğrudan açılırsa (file://) site çalışmaz: kullanıcıyı yönlendir -->
+<script>
+  if (location.protocol === "file:") {
+    document.addEventListener("DOMContentLoaded", function () {
+      document.body.innerHTML =
+        '<div style="font-family:system-ui,sans-serif;max-width:600px;margin:12vh auto;padding:32px;line-height:1.6;color:#1F2328">' +
+        '<h1 style="font-size:22px;margin:0 0 12px">Bu sayfa sunucu üzerinden açılmalı</h1>' +
+        '<p>Terminalde proje klasörüne gidip <code>uvicorn app.main:app</code> komutunu çalıştırın, ' +
+        'ardından tarayıcıda <b>http://127.0.0.1:8000</b> adresini açın.</p></div>';
+    });
+  }
+</script>
+
+<a class="lx-skip" href="#main">İçeriğe geç</a>
+
+<header class="lx-header">
+  <div class="lx-wrap lx-header-inner">
+    <a class="lx-brand" href="/" aria-label="LexPlain ana sayfa">
+      <svg class="lx-brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="currentColor"/>
+        <path d="M10 8v16h12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      LexPlain
+    </a>
+    <nav class="lx-nav" aria-label="Ana menü">
+      <a href="#nasil" class="lx-nav-link" data-nav>Nasıl çalışır?</a>
+      <a href="#sss" class="lx-nav-link" data-nav>Sık sorulanlar</a>
+      <a href="#incele" class="lx-btn lx-btn-primary lx-btn-sm" data-nav>Sözleşme incele</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- =========================================================== ANA SAYFA -->
+  <div id="viewStart">
+
+    <section class="lx-intro" id="incele" aria-labelledby="introTitle">
+      <div class="lx-wrap lx-intro-grid">
+
+        <div class="lx-intro-text">
+          <h1 id="introTitle">İmzalamadan önce, sözleşmenizi anlayın.</h1>
+          <p class="lx-lead">Sözleşmenizi ekleyin; dikkat etmeniz gereken maddeleri ve size etkilerini sade Türkçeyle görün.</p>
+
+          <dl class="lx-facts">
+            <div>
+              <dt>Ne ekleyebilirim?</dt>
+              <dd>Kira, iş, abonelik ve benzeri sözleşmeler. PDF, Word, fotoğraf ya da düz metin.</dd>
+            </div>
+            <div>
+              <dt>Sonunda ne göreceğim?</dt>
+              <dd>Dikkat gerektiren maddeler, size etkileri, ne yapabileceğiniz ve sözleşmede eksik kalan konular.</dd>
+            </div>
+          </dl>
+
+          <figure class="lx-example" aria-label="Örnek açıklama">
+            <figcaption>Örnek</figcaption>
+            <blockquote class="lx-example-clause">“Depozito, kiralananın tahliyesinde kiraya verenin takdirine göre iade edilir.”</blockquote>
+            <div class="lx-example-plain">
+              <span class="lx-risk lx-risk-yuksek">Yüksek risk</span>
+              <p>Depozitonun geri verilip verilmeyeceğine yalnızca ev sahibi karar veriyor. İade süresinin ve kesinti koşullarının yazılmasını isteyin.</p>
+            </div>
+          </figure>
+        </div>
+
+        <div class="lx-intro-form">
+          <form id="composer" class="lx-card lx-form" novalidate aria-labelledby="formTitle">
+            <h2 id="formTitle" class="lx-form-title">Sözleşmenizi ekleyin</h2>
+
+            <div id="formError" class="lx-alert lx-alert-error" role="alert" hidden>
+              <p id="formErrorText"></p>
+              <button type="button" id="retryBtn" class="lx-btn lx-btn-secondary lx-btn-sm">Tekrar dene</button>
+            </div>
+
+            <!-- 1. Kaynak -->
+            <div class="lx-field">
+              <div class="lx-tabs-mini" role="tablist" aria-label="Sözleşmeyi ekleme yöntemi">
+                <button type="button" class="lx-tab-mini" role="tab" id="tabFile" aria-selected="true" aria-controls="sourceFile" data-source="file">Dosya yükle</button>
+                <button type="button" class="lx-tab-mini" role="tab" id="tabPaste" aria-selected="false" aria-controls="sourcePaste" data-source="paste" tabindex="-1">Metin yapıştır</button>
+              </div>
+
+              <div id="sourceFile" role="tabpanel" aria-labelledby="tabFile">
+                <div id="dropZone" class="lx-drop">
+                  <input id="fileInput" type="file" class="lx-sr-only" accept=".pdf,.docx,.txt,.md,.jpg,.jpeg,.png,.webp" aria-describedby="fileHint fileError">
+                  <label for="fileInput" class="lx-drop-label">
+                    <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
+                    <span><b>Dosya seçin</b> ya da buraya sürükleyin</span>
+                  </label>
+                  <p id="fileHint" class="lx-help">PDF, Word (.docx), TXT, JPG, PNG veya WEBP. En fazla <span id="maxMb">8</span> MB.</p>
+                </div>
+                <div id="fileRow" class="lx-file" hidden>
+                  <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                  <div class="lx-file-info">
+                    <span id="fileName" class="lx-file-name"></span>
+                    <span id="fileMeta" class="lx-help"></span>
+                  </div>
+                  <button type="button" id="fileChange" class="lx-btn lx-btn-ghost lx-btn-sm">Değiştir</button>
+                  <button type="button" id="fileRemove" class="lx-btn lx-btn-ghost lx-btn-sm">Kaldır</button>
+                </div>
+                <p id="fileError" class="lx-field-error" hidden></p>
+              </div>
+
+              <div id="sourcePaste" role="tabpanel" aria-labelledby="tabPaste" hidden>
+                <label for="contractText" class="lx-label">Sözleşme metni</label>
+                <textarea id="contractText" class="lx-textarea" rows="8" aria-describedby="textHelp textError"
+                  placeholder="Sözleşmenin tamamını buraya yapıştırın."></textarea>
+                <div class="lx-row-between">
+                  <p id="textHelp" class="lx-help">Madde numaralarıyla birlikte tamamını yapıştırın.</p>
+                  <span id="charCount" class="lx-help" aria-live="polite">0 karakter</span>
+                </div>
+                <p id="textError" class="lx-field-error" hidden></p>
+              </div>
+
+              <details class="lx-menu" id="sampleMenu">
+                <summary class="lx-menu-btn">Örnek sözleşmeyle dene <i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
+                <div class="lx-menu-list">
+                  <button type="button" data-sample="kira">Konut kira sözleşmesi</button>
+                  <button type="button" data-sample="is">İş sözleşmesi</button>
+                  <button type="button" data-sample="hizmet">Spor salonu üyeliği</button>
+                </div>
+              </details>
+            </div>
+
+            <!-- 2. Tür -->
+            <fieldset class="lx-field">
+              <legend class="lx-label">Sözleşme türü</legend>
+              <div class="lx-choice-row" id="typeOptions">
+                <label class="lx-choice"><input type="radio" name="ctype" value="kira"><span>Kira</span></label>
+                <label class="lx-choice"><input type="radio" name="ctype" value="is"><span>İş</span></label>
+                <label class="lx-choice"><input type="radio" name="ctype" value="hizmet"><span>Abonelik / hizmet</span></label>
+                <label class="lx-choice"><input type="radio" name="ctype" value="diger"><span>Diğer</span></label>
+              </div>
+              <p id="typeHint" class="lx-help" hidden></p>
+              <p id="typeError" class="lx-field-error" hidden></p>
+            </fieldset>
+
+            <!-- 3. Rol -->
+            <fieldset class="lx-field" id="roleField" hidden>
+              <legend class="lx-label">Bu sözleşmedeki rolünüz</legend>
+              <div class="lx-role-options" id="roleOptions"></div>
+              <div id="roleNoteWrap" hidden>
+                <label for="roleNote" class="lx-sr-only">Bu sözleşmedeki rolünüz</label>
+                <input id="roleNote" type="text" class="lx-input" maxlength="120" aria-describedby="roleNoteHelp roleError"
+                  placeholder="Örn. Kursa kaydolan öğrenci">
+                <p id="roleNoteHelp" class="lx-help">Kısaca yazın; inceleme bu bakış açısıyla yapılır.</p>
+              </div>
+              <p id="roleError" class="lx-field-error" hidden></p>
+            </fieldset>
+
+            <button id="analyzeBtn" type="submit" class="lx-btn lx-btn-primary lx-btn-block">Sözleşmeyi incele</button>
+
+            <p class="lx-privacy">
+              <i class="bi bi-shield-check" aria-hidden="true"></i>
+              <span>T.C. kimlik numarası, IBAN, telefon ve e-posta adresleri incelemeden önce maskelenir.
+              <a href="#sss" data-nav>Verileriniz nasıl işlenir?</a></span>
+            </p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="nasil" class="lx-section" aria-labelledby="howTitle">
+      <div class="lx-wrap">
+        <h2 id="howTitle" class="lx-h2">Nasıl çalışır?</h2>
+        <ol class="lx-steps">
+          <li>
+            <h3>Sözleşmeyi ekleyin</h3>
+            <p>Dosyayı yükleyin ya da metni yapıştırın. Sözleşme türünü ve rolünüzü seçin.</p>
+          </li>
+          <li>
+            <h3>LexPlain maddeleri inceler</h3>
+            <p>Her madde, sizin tarafınızdan bakılarak değerlendirilir ve ilgili kanun hükümleriyle karşılaştırılır.</p>
+          </li>
+          <li>
+            <h3>Ne yapacağınızı görün</h3>
+            <p>Dikkat gerektiren maddeleri, size etkisini, önerilen değişikliği ve karşı tarafa sorulacakları okuyun.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="neleri" class="lx-section lx-section-alt" aria-labelledby="catchTitle">
+      <div class="lx-wrap lx-split">
+        <div>
+          <h2 id="catchTitle" class="lx-h2">Neleri fark eder?</h2>
+          <p class="lx-muted">Sık karşılaşılan ve çoğu zaman fark edilmeden imzalanan maddelerden bazıları.</p>
+          <div class="lx-seg" role="tablist" aria-label="Sözleşme türü">
+            <button type="button" role="tab" class="lx-seg-btn" aria-selected="true" aria-controls="catchKira" id="catchTabKira">Kira</button>
+            <button type="button" role="tab" class="lx-seg-btn" aria-selected="false" aria-controls="catchIs" id="catchTabIs" tabindex="-1">İş</button>
+            <button type="button" role="tab" class="lx-seg-btn" aria-selected="false" aria-controls="catchHizmet" id="catchTabHizmet" tabindex="-1">Abonelik</button>
+          </div>
+        </div>
+        <div>
+          <ul class="lx-catch" id="catchKira" role="tabpanel" aria-labelledby="catchTabKira">
+            <li><b>Üç aylık kirayı aşan depozito</b><span>Konut kirasında güvence bedeli üç aylık kirayı aşamaz.</span></li>
+            <li><b>Ev sahibinin belirlediği kira artışı</b><span>Yenilenen dönemde artış, on iki aylık TÜFE ortalamasını geçemez.</span></li>
+            <li><b>Geç ödeme cezası</b><span>Kiranın geç ödenmesine bağlanan ceza koşulu konut kirasında geçersizdir.</span></li>
+            <li><b>Bütün onarımların kiracıya yüklenmesi</b><span>Büyük onarımlar kural olarak ev sahibine aittir.</span></li>
+          </ul>
+          <ul class="lx-catch" id="catchIs" role="tabpanel" aria-labelledby="catchTabIs" hidden>
+            <li><b>İki aydan uzun deneme süresi</b><span>Deneme süresi en çok iki ay olabilir; toplu sözleşmeyle dört aya kadar.</span></li>
+            <li><b>Ücrete dahil sayılan fazla mesai</b><span>Haftalık 45 saati aşan çalışma en az yüzde elli zamlı ödenir.</span></li>
+            <li><b>Yalnızca çalışana yüklenen ceza</b><span>Hizmet sözleşmesinde yalnızca işçi aleyhine konan ceza koşulu geçersizdir.</span></li>
+            <li><b>Geniş rekabet yasağı</b><span>Süresi özel durumlar dışında iki yılı aşamaz.</span></li>
+          </ul>
+          <ul class="lx-catch" id="catchHizmet" role="tabpanel" aria-labelledby="catchTabHizmet" hidden>
+            <li><b>Kendiliğinden yenilenen üyelik</b><span>Bildirim tarihini kaçırırsanız yeni bir dönem için ödeme yapabilirsiniz.</span></li>
+            <li><b>Tek taraflı fiyat değişikliği</b><span>Tüketiciyle müzakere edilmeden konan dengesiz şartlar haksız şart sayılabilir.</span></li>
+            <li><b>“Ücret iade edilmez” ifadesi</b><span>Mesafeli sözleşmelerde 14 günlük cayma hakkı kanundan gelir.</span></li>
+            <li><b>Zorlaştırılmış iptal</b><span>Abonelik, kurulduğu yol kadar kolay bir yolla sona erdirilebilmelidir.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="sss" class="lx-section" aria-labelledby="faqTitle">
+      <div class="lx-wrap lx-split">
+        <h2 id="faqTitle" class="lx-h2">Sık sorulanlar</h2>
+        <div class="lx-faq">
+          <details>
+            <summary>LexPlain bir avukatın yerine geçer mi?</summary>
+            <p>Hayır. LexPlain sözleşmenizi anlamanıza ve doğru soruları sormanıza yardımcı olan bir bilgilendirme aracıdır. Önemli kararlarda ve anlaşmazlıklarda bir avukata ya da baronuzun ücretsiz adli yardım bürosuna başvurun.</p>
+          </details>
+          <details>
+            <summary>Sözleşmemdeki kişisel bilgiler ne oluyor?</summary>
+            <p>T.C. kimlik numarası, IBAN, telefon numarası ve e-posta adresleri incelemeden önce otomatik olarak maskelenir. Ad, soyad ve adres gibi bilgiler maskelenmez. Sözleşme metni LexPlain sunucusunda bir veritabanına kaydedilmez; ayrıntılı inceleme için, maskelenmiş hâliyle yapay zekâ hizmet sağlayıcısına iletilir. Kişisel bilgilerinizi paylaşmak istemiyorsanız metni yapıştırmadan önce bu bilgileri silebilirsiniz.</p>
+          </details>
+          <details>
+            <summary>Hangi sözleşmeleri inceleyebilirim?</summary>
+            <p>Konut kira sözleşmeleri, iş sözleşmeleri ve spor salonu, internet, GSM gibi abonelik ve hizmet sözleşmeleri ayrıntılı olarak incelenir. Kredi, kurs ya da araç kiralama gibi diğer sözleşmeler için “Diğer” türünü seçebilirsiniz.</p>
+          </details>
+          <details>
+            <summary>Kanun bilgileri nereden geliyor?</summary>
+            <p>Türk Borçlar Kanunu, İş Kanunu, Tüketicinin Korunması Hakkında Kanun ve Kişisel Verilerin Korunması Kanunu’ndan hazırlanmış özetlerden. Her bulgunun ayrıntısında ilgili kanun maddesi gösterilir.</p>
+          </details>
+          <details>
+            <summary>Sonuçlar yanlış olabilir mi?</summary>
+            <p>Olabilir. Bu yüzden her açıklamanın yanında sözleşmedeki ilgili ifade de gösterilir; kendiniz karşılaştırabilirsiniz. Otomatik eşleştirilemeyen ifadeler açıkça belirtilir.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================== İNCELENİYOR -->
+  <section id="viewLoading" class="lx-loading" hidden aria-live="polite" aria-busy="true">
+    <div class="lx-spinner" aria-hidden="true"></div>
+    <h1 class="lx-h2" id="loadingTitle">Sözleşmeniz inceleniyor</h1>
+    <p class="lx-muted">Bu işlem genellikle 15–60 saniye sürer. Lütfen sayfayı kapatmayın.</p>
+  </section>
+
+  <!-- =========================================================== SONUÇ -->
+  <section id="viewResults" hidden aria-labelledby="verdictTitle">
+    <div class="lx-wrap lx-results">
+
+      <div class="lx-results-top lx-no-print">
+        <button type="button" id="newBtn" class="lx-link-btn"><i class="bi bi-arrow-left" aria-hidden="true"></i> Yeni inceleme</button>
+      </div>
+
+      <header class="lx-result-head">
+        <p class="lx-context" id="contextLine"></p>
+        <h1 id="verdictTitle" class="lx-verdict"><span class="lx-verdict-mark" aria-hidden="true"></span><span id="verdictText"></span></h1>
+        <p id="summaryText" class="lx-summary"></p>
+
+        <div class="lx-result-meta">
+          <ul class="lx-dist" id="distRow" aria-label="Bulgu dağılımı"></ul>
+          <details class="lx-score">
+            <summary>Risk puanı:&nbsp;<b id="scoreNum">0</b>/100<span class="lx-sr-only"> (açıklamayı göster)</span></summary>
+            <p>Puan, bulguların sayısına ve önem düzeyine göre hesaplanan kaba bir göstergedir. Tek başına karar vermek için değil, sözleşmeleri karşılaştırmak için kullanın.</p>
+          </details>
+        </div>
+
+        <div class="lx-result-actions lx-no-print">
+          <button type="button" id="negotiateBtn" class="lx-btn lx-btn-secondary"><i class="bi bi-pencil-square" aria-hidden="true"></i> Değişiklik talebi hazırla</button>
+          <button type="button" id="printBtn" class="lx-btn lx-btn-ghost"><i class="bi bi-download" aria-hidden="true"></i> PDF olarak indir</button>
+        </div>
+      </header>
+
+      <div id="warningBox" class="lx-alert lx-alert-warn" role="status" hidden>
+        <p id="warningText"></p>
+        <button type="button" id="reanalyzeBtn" class="lx-btn lx-btn-secondary lx-btn-sm lx-no-print">Yeniden incele</button>
+      </div>
+
+      <div class="lx-tabs lx-no-print" role="tablist" aria-label="İnceleme bölümleri">
+        <button type="button" class="lx-tab" role="tab" id="tabReview" aria-controls="paneReview" aria-selected="true">İnceleme <span class="lx-count" id="cntReview">0</span></button>
+        <button type="button" class="lx-tab" role="tab" id="tabMissing" aria-controls="paneMissing" aria-selected="false" tabindex="-1">Eksikler ve sorular <span class="lx-count" id="cntMissing">0</span></button>
+        <button type="button" class="lx-tab" role="tab" id="tabTools" aria-controls="paneTools" aria-selected="false" tabindex="-1">Araçlar</button>
+      </div>
+
+      <!-- İnceleme -->
+      <div id="paneReview" class="lx-pane" role="tabpanel" aria-labelledby="tabReview" tabindex="-1">
+        <div class="lx-filters lx-no-print">
+          <div class="lx-seg" id="riskFilter" role="group" aria-label="Risk düzeyine göre filtrele"></div>
+          <div class="lx-filter-tools">
+            <label class="lx-search">
+              <span class="lx-sr-only">Bulgularda ara</span>
+              <i class="bi bi-search" aria-hidden="true"></i>
+              <input id="searchBox" type="search" placeholder="Bulgularda ara">
+            </label>
+            <button type="button" id="advToggle" class="lx-btn lx-btn-ghost lx-btn-sm" aria-expanded="false" aria-controls="advFilters">
+              <i class="bi bi-sliders" aria-hidden="true"></i> Filtreler
+            </button>
+          </div>
+        </div>
+        <div id="advFilters" class="lx-adv lx-no-print" hidden>
+          <label class="lx-check">
+            <input type="checkbox" id="onlyInvalid">
+            <span>Yalnızca yasaya aykırı olabilecek maddeler</span>
+          </label>
+        </div>
+
+        <ol id="findings" class="lx-findings"></ol>
+
+        <div id="noFindings" class="lx-empty" hidden>
+          <p>Bu filtreye uyan bulgu yok.</p>
+          <button type="button" id="clearFilters" class="lx-btn lx-btn-secondary lx-btn-sm">Filtreleri temizle</button>
+        </div>
+        <div id="emptyFindings" class="lx-empty" hidden>
+          <p><b>Dikkat gerektiren bir madde bulunamadı.</b></p>
+          <p class="lx-muted">Bu, sözleşmenin tamamen sorunsuz olduğu anlamına gelmez. İmzalamadan önce metni yine de dikkatle okuyun.</p>
+        </div>
+      </div>
+
+      <!-- Eksikler ve sorular -->
+      <div id="paneMissing" class="lx-pane" role="tabpanel" aria-labelledby="tabMissing" tabindex="-1" hidden>
+        <div class="lx-two-col">
+          <section aria-labelledby="missTitle">
+            <h2 id="missTitle" class="lx-h3">Sözleşmede yer almayan konular</h2>
+            <p class="lx-muted">Sizi koruyabilecek bu hükümlerin eklenmesini isteyebilirsiniz.</p>
+            <ul id="missingList" class="lx-list"></ul>
+          </section>
+          <section aria-labelledby="qTitle">
+            <div class="lx-row-between lx-align-start">
+              <div>
+                <h2 id="qTitle" class="lx-h3">Karşı tarafa sorabilecekleriniz</h2>
+                <p class="lx-muted">Cevapları mümkünse yazılı olarak alın.</p>
+              </div>
+              <button type="button" id="copyQuestions" class="lx-btn lx-btn-ghost lx-btn-sm lx-no-print"><i class="bi bi-copy" aria-hidden="true"></i> Kopyala</button>
+            </div>
+            <ol id="questionList" class="lx-list lx-list-num"></ol>
+          </section>
+        </div>
+      </div>
+
+      <!-- Araçlar -->
+      <div id="paneTools" class="lx-pane lx-no-print" role="tabpanel" aria-labelledby="tabTools" tabindex="-1" hidden>
+        <section class="lx-tool" aria-labelledby="chatTitle">
+          <h2 id="chatTitle" class="lx-h3">Sözleşmeye soru sorun</h2>
+          <p class="lx-muted">Cevaplar sözleşme metnine ve ilgili kanun özetlerine dayanır.</p>
+          <div id="chatLog" class="lx-chat" aria-live="polite"></div>
+          <div id="chatSuggestions" class="lx-chips"></div>
+          <form id="chatForm" class="lx-chat-form">
+            <label for="chatInput" class="lx-sr-only">Sorunuz</label>
+            <input id="chatInput" class="lx-input" maxlength="1000" autocomplete="off" placeholder="Örn. Sözleşmeyi erken bitirirsem ne öderim?">
+            <button type="submit" class="lx-btn lx-btn-primary">Sor</button>
+          </form>
+        </section>
+
+        <section class="lx-tool" aria-labelledby="datesTitle">
+          <div class="lx-row-between lx-align-start">
+            <div>
+              <h2 id="datesTitle" class="lx-h3">Önemli tarihler</h2>
+              <p class="lx-muted">Hesaplanan tarihler, sözleşmedeki başlangıç tarihine ve süreye göre tahmindir.</p>
+            </div>
+            <button type="button" id="icsBtn" class="lx-btn lx-btn-ghost lx-btn-sm"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Takvime ekle</button>
+          </div>
+          <ol id="dateList" class="lx-timeline"></ol>
+        </section>
+
+        <section class="lx-tool" id="calcSection" aria-labelledby="calcTitle">
+          <h2 id="calcTitle" class="lx-h3">Kira hesaplamaları</h2>
+          <p class="lx-muted">Konut kiraları içindir. Kira bedeli, bulunabildiyse sözleşmeden dolduruldu.</p>
+          <div class="lx-calcs">
+            <div class="lx-calc">
+              <h3>Kira artışı</h3>
+              <label for="calcRent" class="lx-label">Şu anki aylık kira (TL)</label>
+              <input id="calcRent" class="lx-input" type="number" min="0" inputmode="decimal">
+              <label for="calcTufe" class="lx-label">TÜFE 12 aylık ortalama artış (%)</label>
+              <input id="calcTufe" class="lx-input" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="tufeHelp">
+              <p id="tufeHelp" class="lx-help">Güncel oranı <a href="https://data.tuik.gov.tr" target="_blank" rel="noopener">TÜİK</a> bülteninde bulabilirsiniz.</p>
+              <label for="calcContractPct" class="lx-label">İstenen artış (%)</label>
+              <input id="calcContractPct" class="lx-input" type="number" min="0" step="0.01" inputmode="decimal">
+              <div id="calcRentOut" class="lx-calc-out" aria-live="polite"></div>
+            </div>
+            <div class="lx-calc">
+              <h3>Depozito</h3>
+              <label for="depRent" class="lx-label">Aylık kira (TL)</label>
+              <input id="depRent" class="lx-input" type="number" min="0" inputmode="decimal">
+              <label for="depAsked" class="lx-label">İstenen depozito (TL)</label>
+              <input id="depAsked" class="lx-input" type="number" min="0" inputmode="decimal">
+              <div id="depOut" class="lx-calc-out" aria-live="polite"></div>
+            </div>
+            <div class="lx-calc">
+              <h3>Erken çıkış</h3>
+              <label for="exitRent" class="lx-label">Aylık kira (TL)</label>
+              <input id="exitRent" class="lx-input" type="number" min="0" inputmode="decimal">
+              <label for="exitRemain" class="lx-label">Sözleşmenin bitmesine kalan ay</label>
+              <input id="exitRemain" class="lx-input" type="number" min="0" inputmode="numeric">
+              <label for="exitRelet" class="lx-label">Evin yeniden kiralanma süresi (ay, tahmini)</label>
+              <input id="exitRelet" class="lx-input" type="number" min="0" value="2" inputmode="numeric">
+              <label for="exitPenalty" class="lx-label">Sözleşmedeki ceza (kaç aylık kira)</label>
+              <input id="exitPenalty" class="lx-input" type="number" min="0" inputmode="numeric">
+              <div id="exitOut" class="lx-calc-out" aria-live="polite"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <p id="disclaimer" class="lx-disclaimer"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="lx-footer lx-no-print">
+  <div class="lx-wrap lx-footer-inner">
+    <p>© 2026 LexPlain</p>
+    <nav aria-label="Alt menü">
+      <a href="#nasil" data-nav>Nasıl çalışır?</a>
+      <a href="#sss" data-nav>Sık sorulanlar</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- Sözleşme metni paneli -->
+<div id="docBackdrop" class="lx-backdrop" hidden></div>
+<aside id="docPanel" class="lx-doc" role="dialog" aria-modal="true" aria-labelledby="docTitle" hidden>
+  <div class="lx-doc-head">
+    <button type="button" id="docClose" class="lx-btn lx-btn-ghost lx-btn-sm"><i class="bi bi-arrow-left" aria-hidden="true"></i> <span class="lx-doc-back">Bulgulara dön</span><span class="lx-doc-x">Kapat</span></button>
+    <h2 id="docTitle" class="lx-h3">Sözleşme metni</h2>
+  </div>
+  <p id="docNotice" class="lx-alert lx-alert-muted" hidden>İlgili bölüm otomatik olarak eşleştirilemedi. Bulgudaki açıklamaya göre metni kendiniz kontrol edin.</p>
+  <div id="docText" class="lx-doc-text" tabindex="0"></div>
+</aside>
+
+<!-- Değişiklik talebi -->
+<dialog id="negotiateDialog" class="lx-dialog" aria-labelledby="negTitle">
+  <form method="dialog" class="lx-dialog-inner">
+    <div class="lx-dialog-head">
+      <h2 id="negTitle" class="lx-h3">Değişiklik talebi</h2>
+      <button type="submit" class="lx-icon-btn" aria-label="Kapat"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+    </div>
+    <p class="lx-muted">Önerilen değişikliklerden hazırlandı. Göndermeden önce düzenleyebilirsiniz.</p>
+    <label for="negotiateText" class="lx-sr-only">Değişiklik talebi metni</label>
+    <textarea id="negotiateText" class="lx-textarea lx-textarea-doc" rows="14"></textarea>
+    <div class="lx-dialog-actions">
+      <button type="submit" class="lx-btn lx-btn-ghost">Kapat</button>
+      <button type="button" id="copyNegotiate" class="lx-btn lx-btn-primary"><i class="bi bi-copy" aria-hidden="true"></i> Metni kopyala</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="lx-toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
