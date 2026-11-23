@@ -1,0 +1,889 @@
+{
+  "_aciklama": "Yapay zekâ kapalıyken (veya ona ek güvenlik ağı olarak) kullanılan kural tabanı. 'desenler' listesindeki her grup bir VEYA seçeneğidir; grup içindeki tüm düzenli ifadeler aynı maddede bulunmalıdır (VE). İfadeler Türkçe küçük harfe çevrilmiş metne uygulanır.",
+  "kurallar": [
+    {
+      "id": "depozito_takdir",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Depozito",
+      "baslik": "Depozito iadesi ev sahibinin keyfine bırakılmış",
+      "desenler": [
+        [
+          "depozito|güvence bedeli|teminat",
+          "iade|geri ver|geri öde",
+          "takdir|uygun gör|dilediği|keyfi|edilmeyebilir"
+        ]
+      ],
+      "sade": "Depozitonun geri verilip verilmeyeceğine ev sahibi tek başına karar veriyor; ölçü belirtilmemiş.",
+      "neden": "Çıkışta 'boya gerekiyor, temizlik yapılacak' gibi gerekçelerle paranın tamamı veya bir kısmı tutulabilir.",
+      "oneri": "İade süresini ve kesinti şartlarını somutlaştırın; giriş tutanağı ve fotoğraf isteyin.",
+      "alternatif": "Güvence bedeli, olağan kullanımdan doğan yıpranmalar hariç, kiralananın tesliminden itibaren 30 gün içinde kiracının bildirdiği banka hesabına iade edilir. Kesinti yapılacaksa kalemler belgeleriyle birlikte yazılı olarak bildirilir.",
+      "ref": "TBK_342",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "kira_artis_tek_tarafli",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Kira artışı",
+      "baslik": "Kira artışını ev sahibi tek başına belirliyor",
+      "desenler": [
+        [
+          "artış|artırıl|\\bzam\\b|zamm|yeni(lenen)? kira|kira bedeli",
+          "kiraya veren(in)? (tarafından )?(.{0,40})?(belirle|tespit)|serbest(çe)?|dilediği (oran|miktar)|piyasa koşullarına göre|emsal (kira|rayiç)|tek taraflı"
+        ]
+      ],
+      "sade": "Yeni dönem kirasını ev sahibinin istediği gibi belirleyebileceği yazıyor.",
+      "neden": "Konut kirasında yenilenen dönemde artış, son 12 aylık TÜFE ortalamasını geçemez. Bu madde yasal sınırı aşan bir artışa kapı aralıyor.",
+      "oneri": "Artışın 'TÜFE on iki aylık ortalama değişim oranını geçmemek üzere' yapılacağını yazdırın.",
+      "alternatif": "Yenilenen kira dönemlerinde kira bedeli, bir önceki kira yılının TÜFE on iki aylık ortalamalara göre değişim oranında artırılır.",
+      "ref": "TBK_344",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "kira_doviz",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Kira bedeli",
+      "baslik": "Kira yabancı para (döviz) üzerinden belirlenmiş",
+      "desenler": [
+        [
+          "kira",
+          "\\d[\\d.,]*\\s*(usd|eur|euro|dolar|avro|sterlin|gbp)\\b|döviz (cinsinden|olarak)|(dolar|euro|avro) (olarak|cinsinden)|kur(u|una|a) (göre|endeksli|bağlı)"
+        ]
+      ],
+      "sade": "Kira Türk lirası yerine döviz üzerinden yazılmış ya da dövize bağlanmış.",
+      "neden": "Kur yükselirse lira cinsinden ödeyeceğiniz kira kendiliğinden artar. Konut kiralarında döviz cinsinden sözleşmeye ciddi sınırlamalar getirilmiştir; geçerliliği güncel mevzuata göre kontrol edilmelidir.",
+      "oneri": "Kira bedelinin Türk lirası olarak sabitlenmesini isteyin.",
+      "alternatif": "Aylık kira bedeli ……… Türk lirasıdır.",
+      "ref": null,
+      "gecerlilik": "belirsiz",
+      "tek_sefer": true
+    },
+    {
+      "id": "cezai_sart_gec_odeme",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Ceza",
+      "baslik": "Kira geç ödenirse ceza ödenecek",
+      "desenler": [
+        [
+          "ceza|cezai şart|gecikme bedeli|tazminat",
+          "geç|gecik|ödenmez|ödenmemesi|ödemediği|zamanında",
+          "kira (bedel|paras|ödem|borc)|kiranın|kirayı|kiraları"
+        ]
+      ],
+      "sade": "Kirayı geç öderseniz ayrıca bir ceza ödemeniz gerektiği yazıyor.",
+      "neden": "Konut kirasında kiranın geç ödenmesine bağlanan ceza koşulu kanunen geçersizdir. Ev sahibi en fazla yasal gecikme faizi isteyebilir.",
+      "oneri": "Bu maddenin çıkarılmasını isteyin; imzalasanız bile kanunen geçersiz olduğunu bilin.",
+      "alternatif": "Kira bedelinin zamanında ödenmemesi hâlinde kiraya veren, kanuni gecikme faizi talep edebilir.",
+      "ref": "TBK_346",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "muacceliyet",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Ceza",
+      "baslik": "Bir ay ödenmezse kalan tüm kiralar istenebilir",
+      "desenler": [
+        [
+          "muaccel"
+        ],
+        [
+          "(kalan|geri kalan|tüm|bütün) (ay(lar)?(ın)?|sürenin|yılın) kira"
+        ]
+      ],
+      "sade": "Tek bir ayı geç öderseniz, sözleşme sonuna kadarki bütün kiraları birden ödemeniz gerektiği yazıyor.",
+      "neden": "Bu tür 'muacceliyet' maddeleri konut kiralarında kanunen geçersizdir.",
+      "oneri": "Maddenin çıkarılmasını isteyin. Buna dayanarak icra takibi yapılırsa süresinde itiraz edin.",
+      "alternatif": null,
+      "ref": "TBK_346",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "erken_tahliye_ceza",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Erken çıkış",
+      "baslik": "Erken çıkışta sabit ceza öngörülmüş",
+      "desenler": [
+        [
+          "erken (çık|tahliye|fes|ayrıl)|süresinden önce|süre bitmeden|sözleşme süresi dolmadan",
+          "ceza|tazminat|aylık kira|kira bedeli tutarında|depozito (yanar|iade edilmez)"
+        ]
+      ],
+      "sade": "Sözleşme bitmeden çıkarsanız birkaç aylık kira tutarında ceza ödemeniz veya depozitoyu kaybetmeniz öngörülmüş.",
+      "neden": "Kanuna göre erken çıkan kiracı, ev makul sürede yeniden kiralanana kadar olan kirayla sorumludur; peşinen belirlenmiş sabit ceza geçersiz sayılabilir. Uygun yeni kiracı bulmanız sorumluluğu azaltır.",
+      "oneri": "Sabit ceza yerine 'makul süre / yeni kiracı bulunana kadar' esasını ve bildirim süresini yazdırın.",
+      "alternatif": "Kiracı sözleşmeyi süresinden önce sona erdirmek isterse 30 gün önceden yazılı bildirimde bulunur. Kiracının sorumluluğu, kiralananın benzer koşullarla yeniden kiraya verilebileceği makul süreyle sınırlıdır.",
+      "ref": "TBK_325",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "tahliye_taahhudu",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Tahliye",
+      "baslik": "Sözleşmeyle birlikte tahliye taahhüdü imzalatılıyor",
+      "desenler": [
+        [
+          "tahliye taahhüd|tahliye taahhüt|tahliye senedi|boş tahliye"
+        ]
+      ],
+      "sade": "Evi belirli bir tarihte boşaltacağınıza dair önceden imza atmanız isteniyor.",
+      "neden": "Bu belge icra yoluyla hızlı tahliyeye imkân verir. Sözleşmeyle aynı anda (ev teslim edilmeden) alınan tahliye taahhüdü Yargıtay uygulamasında geçersiz sayılır, ancak yine de başınızı ağrıtabilir.",
+      "oneri": "Tarihi boş bir tahliye taahhüdünü kesinlikle imzalamayın.",
+      "alternatif": null,
+      "ref": "TBK_352",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "tum_tamirat_kiraci",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Bakım ve onarım",
+      "baslik": "Her türlü tamir ve onarım kiracıya yüklenmiş",
+      "desenler": [
+        [
+          "(tüm|her türlü|bütün|her nevi|büyük küçük) (tamir|tadilat|onarım|bakım|arıza|masraf)",
+          "kiracı"
+        ]
+      ],
+      "sade": "Evdeki küçük-büyük her arızanın masrafını sizin ödeyeceğiniz yazıyor.",
+      "neden": "Kanunen kiracı yalnızca olağan kullanımdan doğan küçük bakımları üstlenir. Kombi, çatı, tesisat gibi büyük onarımlar ev sahibine aittir.",
+      "oneri": "'Olağan kullanımdan doğan küçük bakım ve temizlik giderleri kiracıya, diğer onarımlar kiraya verene aittir' şeklinde ayrım yaptırın.",
+      "alternatif": "Kiracı, olağan kullanım için gerekli temizlik ve küçük bakım giderlerini karşılar. Kiralananın kullanıma elverişli durumda bulundurulması için gereken diğer onarımlar kiraya verene aittir.",
+      "ref": "TBK_317",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "boya_badana",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Çıkış masrafı",
+      "baslik": "Çıkışta boya-badana zorunluluğu",
+      "desenler": [
+        [
+          "boya|badana|temizlet"
+        ]
+      ],
+      "sade": "Evi bırakırken boya yaptırmanız veya profesyonel temizlik ödemeniz isteniyor.",
+      "neden": "Kiracı olağan kullanımdan doğan eskimelerden sorumlu değildir. Önceden yapılan bu tür ödeme taahhütleri geçersiz olabilir; yalnızca sözleşmeye aykırı kullanımdan doğan zarar istenebilir.",
+      "oneri": "Girişte evin durumunu fotoğraflı tutanakla kayda geçirin; maddeyi 'olağan eskime hariç' şeklinde yumuşatın.",
+      "alternatif": "Kiracı kiralananı, olağan kullanımdan doğan eskimeler hariç, teslim aldığı durumda geri verir.",
+      "ref": "TBK_334",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "emlak_vergisi_kiraci",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Ek ödeme",
+      "baslik": "Emlak vergisi gibi mülk sahibi giderleri kiracıya yüklenmiş",
+      "desenler": [
+        [
+          "emlak vergisi|dask|bina sigortası|çevre temizlik vergisi"
+        ]
+      ],
+      "sade": "Normalde ev sahibinin ödediği vergi veya sigorta gibi giderleri sizin ödemeniz isteniyor.",
+      "neden": "Bu giderler kural olarak kiraya verene aittir; ayrıca kira dışındaki ek ödeme yükleri kanunen sınırlıdır.",
+      "oneri": "Bu kalemlerin ev sahibine ait olduğunu yazdırın veya kira bedelinden düşülmesini konuşun.",
+      "alternatif": "Kiralananla ilgili vergi, harç ve zorunlu deprem sigortası giderleri kiraya verene aittir.",
+      "ref": "TBK_302",
+      "gecerlilik": "belirsiz"
+    },
+    {
+      "id": "ek_odeme",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Ek ödeme",
+      "baslik": "Kira ve aidat dışında ek ödeme istenmiş",
+      "desenler": [
+        [
+          "hava parası|anahtar parası|bağış|ek ödeme|ilave bedel|yıllık sabit (ücret|bedel)"
+        ]
+      ],
+      "sade": "Kira ve ortak giderler dışında ayrı bir para ödemeniz bekleniyor.",
+      "neden": "Kiracıya kira bedeli ve yan giderler dışında başka bir ödeme yükümlülüğü getirilemez.",
+      "oneri": "Bu ödemenin dayanağını sorun ve maddenin çıkarılmasını isteyin.",
+      "alternatif": null,
+      "ref": "TBK_346",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "habersiz_giris",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Özel hayat",
+      "baslik": "Ev sahibi habersiz eve girebilir",
+      "desenler": [
+        [
+          "(haber vermeksizin|haber vermeden|izin almaksızın|izinsiz|her zaman|dilediği zaman|istediği zaman)",
+          "gir|girme|denetle|kontrol|gez"
+        ],
+        [
+          "anahtar(ın|ların)? (bir )?(kopya|yedeğ|yedek)"
+        ]
+      ],
+      "sade": "Ev sahibinin size haber vermeden eve girebileceği ya da yedek anahtar tutacağı yazıyor.",
+      "neden": "Kiracı yalnızca makul bir önceden bildirimle evin gezilmesine katlanmak zorundadır. Habersiz giriş konut dokunulmazlığını ihlal edebilir.",
+      "oneri": "Girişlerin 'en az 48 saat önceden haber verilerek ve kiracının uygun olduğu saatte' yapılacağını yazdırın.",
+      "alternatif": "Kiraya veren, kiralananı ancak acil durumlar dışında en az 48 saat önceden haber vermek ve kiracının uygun olduğu bir zamanda olmak kaydıyla gezebilir.",
+      "ref": null,
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "otomatik_fesih",
+      "turler": [
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Fesih",
+      "baslik": "Sözleşme ihtarsız / kendiliğinden feshedilebilir",
+      "desenler": [
+        [
+          "kendiliğinden (fes|sona|son bul)|derhal tahliye|tek taraflı olarak fes"
+        ],
+        [
+          "ihtara (gerek )?(kalmaksızın|olmaksızın)|ihtarsız",
+          "fes|tahliye|sona er|bozul"
+        ]
+      ],
+      "sade": "Ev sahibinin size süre tanımadan sözleşmeyi bitirip evden çıkmanızı isteyebileceği yazıyor.",
+      "neden": "Konut kirasında ev sahibinin fesih hakları kanunda sınırlı sayıda sayılmıştır; sözleşmeye eklenen ek fesih sebepleri kiracı aleyhine geçersizdir.",
+      "oneri": "Maddenin çıkarılmasını isteyin; fesih için kanuni süre ve ihtarın uygulanacağını yazdırın.",
+      "alternatif": null,
+      "ref": "TBK_347",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "belirsiz_giderler",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Ek ödeme",
+      "baslik": "Hangi giderleri ödeyeceğiniz belirsiz",
+      "desenler": [
+        [
+          "(tüm|her türlü|bütün) (gider|masraf|aidat|harcama)"
+        ]
+      ],
+      "sade": "Aidat ve diğer masrafların kapsamı açıkça yazılmamış; 'her türlü gider' denmiş.",
+      "neden": "Sınırsız ifade, apartmanın büyük yatırımlarını (dış cephe, asansör yenileme) size yüklemek için kullanılabilir. Bu tür demirbaş giderleri genelde mülk sahibine aittir.",
+      "oneri": "Kiracıya ait olan giderleri tek tek yazdırın: aylık işletme aidatı, elektrik, su, doğalgaz, internet.",
+      "alternatif": "Kiracı, kiralananın aylık işletme aidatı ile elektrik, su, doğalgaz ve internet giderlerini öder. Yatırım ve demirbaş niteliğindeki giderler kiraya verene aittir.",
+      "ref": "TBK_346",
+      "gecerlilik": "belirsiz",
+      "tek_sefer": true
+    },
+    {
+      "id": "kefil_muteselsil",
+      "turler": [
+        "diger",
+        "hizmet",
+        "kira"
+      ],
+      "risk": "dusuk",
+      "kategori": "Kefalet",
+      "baslik": "Kefil isteniyor",
+      "desenler": [
+        [
+          "müteselsil kefil|müteselsilen kefil|kefil(ler)?"
+        ]
+      ],
+      "sade": "Bir yakınınız borcunuza kefil oluyor; 'müteselsil' ise alacaklı önce size değil doğrudan kefile gidebilir.",
+      "neden": "Kira sözleşmelerinde yaygın bir maddedir. Kefil, borcunuzdan sizinle birlikte sorumlu olur; kefaletin geçerli olması için kefilin azami tutarı ve tarihi kendi el yazısıyla yazması gerekir.",
+      "oneri": "Kefaletin azami tutarını sınırlayın ve kefile bu sorumluluğu açıkça anlatın.",
+      "alternatif": null,
+      "ref": "TBK_583",
+      "gecerlilik": "gecerli_ama_riskli",
+      "tek_sefer": true
+    },
+    {
+      "id": "yetkili_mahkeme",
+      "turler": [
+        "diger",
+        "hizmet",
+        "kira"
+      ],
+      "risk": "dusuk",
+      "kategori": "Uyuşmazlık",
+      "baslik": "Uyuşmazlıkta karşı tarafın şehrindeki mahkeme yetkili kılınmış",
+      "desenler": [
+        [
+          "yetkili",
+          "mahkeme|icra"
+        ]
+      ],
+      "sade": "Bir anlaşmazlık olursa davanın belirli bir şehirde görüleceği yazıyor.",
+      "neden": "Bu tür yetki maddeleri yalnızca tacirler arasında geçerlidir; kendi yaşadığınız yerdeki mahkemede de dava açabilirsiniz. Pratikte etkisi sınırlıdır.",
+      "oneri": "Maddeyi önemsemeyin ama varlığını bilin; tüketici uyuşmazlıklarında önce Tüketici Hakem Heyeti'ne başvurabilirsiniz.",
+      "alternatif": null,
+      "ref": "HMK_18",
+      "gecerlilik": "gecersiz_olabilir",
+      "tek_sefer": true
+    },
+    {
+      "id": "otomatik_yenileme",
+      "turler": [
+        "diger",
+        "hizmet"
+      ],
+      "risk": "orta",
+      "kategori": "Yenileme",
+      "baslik": "Sözleşme kendiliğinden yenileniyor",
+      "desenler": [
+        [
+          "otomatik(man)?( olarak)? (yenilen|uzar|devam)|kendiliğinden (yenilen|uzar)|aynı şartlarla (yenilen|uzar)"
+        ]
+      ],
+      "sade": "Süre bitince siz iptal etmezseniz sözleşme kendiliğinden yeni bir dönem için uzuyor ve ücret çekilmeye devam ediyor.",
+      "neden": "Bildirim tarihini kaçırırsanız istemediğiniz bir dönem için ödeme yapmak zorunda kalabilirsiniz.",
+      "oneri": "Yenileme tarihini takviminize ekleyin; yenilemeden önce size hatırlatma yapılmasını isteyin.",
+      "alternatif": "Sözleşme süresi sonunda, müşteriye en az 15 gün önceden yazılı hatırlatma yapılır ve müşteri onay vermedikçe yenilenmez.",
+      "ref": "ABONELIK_YON",
+      "gecerlilik": "gecerli_ama_riskli"
+    },
+    {
+      "id": "tek_tarafli_degisiklik",
+      "turler": [
+        "diger",
+        "hizmet"
+      ],
+      "risk": "yuksek",
+      "kategori": "Tek taraflı değişiklik",
+      "baslik": "Firma fiyatı veya şartları tek başına değiştirebiliyor",
+      "desenler": [
+        [
+          "(tek taraflı|dilediği zaman|herhangi bir zamanda|önceden bildirim(de bulunmaksızın)?|bildirimsiz)",
+          "değiştir|güncelle|değişiklik|artır"
+        ],
+        [
+          "(ücret|fiyat|tarife)(ler)?(de|i|ı)? (değiştirme|değişiklik yapma|güncelleme) hakkı"
+        ]
+      ],
+      "sade": "Firma, siz imzaladıktan sonra fiyatı veya kuralları kendi başına değiştirebileceğini yazmış.",
+      "neden": "Tüketiciyle müzakere edilmeden konan ve tek tarafa üstünlük veren şartlar 'haksız şart' sayılabilir ve geçersizdir.",
+      "oneri": "Değişikliklerin önceden bildirileceğini ve kabul etmezseniz cezasız fesih hakkınızın olduğunu yazdırın.",
+      "alternatif": "Hizmet şartlarında veya ücrette yapılacak değişiklikler en az 30 gün önceden müşteriye bildirilir. Değişikliği kabul etmeyen müşteri sözleşmeyi herhangi bir bedel ödemeden feshedebilir.",
+      "ref": "TKHK_5",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "sorumluluk_reddi",
+      "turler": [
+        "diger",
+        "hizmet",
+        "is",
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Sorumluluk",
+      "baslik": "Karşı taraf hiçbir zarardan sorumlu olmadığını yazmış",
+      "desenler": [
+        [
+          "(hiçbir|herhangi bir) (sorumluluk|sorumluluğu|sorumluluğa)|sorumlu (tutulamaz|değildir|olmayacak)|sorumluluk kabul (etmez|edilmez)"
+        ]
+      ],
+      "sade": "Hizmette veya mülkte bir sorun çıkıp zarar görseniz bile karşı tarafın sorumlu olmayacağı yazıyor.",
+      "neden": "Ağır kusurdan doğan sorumluluğu önceden ortadan kaldıran anlaşmalar kesin olarak hükümsüzdür; tüketici sözleşmelerinde ayrıca haksız şart sayılabilir.",
+      "oneri": "Sorumsuzluğun en azından 'kasıt ve ağır ihmal hariç' olarak sınırlandırılmasını isteyin.",
+      "alternatif": "Taraflar, kasıt veya ağır ihmalden doğan zararlardan kanun hükümleri uyarınca sorumludur.",
+      "ref": "TBK_115",
+      "gecerlilik": "gecersiz_olabilir",
+      "haric": "(?s)^(?!.*(kiraya veren|mal sahibi|ev sahibi|firma|şirket|işveren|hizmet sağlayıcı)).*(kiracı|müşteri|üye|abone|işçi|çalışan|tüketici)\\w*[^.;]{0,40}sorumlu (değil|tutulamaz|olmayacak|tutulmayacak)"
+    },
+    {
+      "id": "cayma_bedeli",
+      "turler": [
+        "diger",
+        "hizmet"
+      ],
+      "risk": "orta",
+      "kategori": "Taahhüt",
+      "baslik": "Taahhüt bozulursa ödeme / indirim iadesi isteniyor",
+      "desenler": [
+        [
+          "cayma bedeli|taahhüt(ün)? (bozul|ihlal)|erken fesih (bedeli|ücreti)|indirim(ler)?(in)? (iade|geri)|kalan (ay|dönem)(lar)?(ın)? (ücret|bedel)"
+        ]
+      ],
+      "sade": "Taahhüt süresi dolmadan iptal ederseniz, aldığınız indirimleri veya kalan ayların ücretini ödemeniz gerekebilir.",
+      "neden": "Bu bedel çoğu zaman yasaldır ancak alınan indirim tutarını aşamaz; tutarın nasıl hesaplanacağı açık olmalıdır.",
+      "oneri": "İptal halinde ödenecek tutarın ay ay tablosunu isteyin.",
+      "alternatif": null,
+      "ref": "TKHK_5",
+      "gecerlilik": "gecerli_ama_riskli"
+    },
+    {
+      "id": "cayma_hakki_yok",
+      "turler": [
+        "hizmet"
+      ],
+      "risk": "yuksek",
+      "kategori": "Cayma / iade",
+      "baslik": "Cayma hakkı yok / ücret iade edilmez deniyor",
+      "desenler": [
+        [
+          "cayma hakkı (yoktur|bulunma|kullanılamaz)|(ücret|bedel|ödeme)(ler)?(i|in)? (hiçbir (koşul|şart)da )?iade (edilmez|yapılmaz|edilmeyecek)"
+        ]
+      ],
+      "sade": "Vazgeçerseniz paranızı geri alamayacağınız yazıyor.",
+      "neden": "İnternet/telefonla kurulan sözleşmelerde 14 günlük cayma hakkı kanundan doğar ve sözleşmeyle kaldırılamaz (bazı istisnalar hariç). Kalan dönem ücretinin hiç iade edilmemesi haksız şart sayılabilir.",
+      "oneri": "Sözleşmenin nasıl kurulduğunu (online/yüz yüze) kontrol edin; online ise 14 günlük cayma hakkınızı kullanabilirsiniz.",
+      "alternatif": null,
+      "ref": "TKHK_48",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "veri_paylasim",
+      "turler": [
+        "diger",
+        "hizmet",
+        "is",
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Kişisel veri",
+      "baslik": "Kişisel verileriniz üçüncü kişilerle paylaşılabilir",
+      "desenler": [
+        [
+          "(üçüncü|3\\.) (kişi|taraf|şahıs)(lar)?|iş ortak|yurt ?dışı|pazarlama",
+          "paylaş|aktar|kullan|işlen"
+        ]
+      ],
+      "sade": "Kimlik, iletişim gibi bilgilerinizin başka şirketlerle paylaşılabileceği veya reklam için kullanılabileceği yazıyor.",
+      "neden": "Açık rıza belirli bir konuya ilişkin ve özgür iradeyle verilmiş olmalıdır. Sözleşmeye gömülü genel rıza maddeleri tartışmalıdır.",
+      "oneri": "Pazarlama ve yurt dışı aktarım için ayrı onay kutusu isteyin; istemiyorsanız onay vermeyin.",
+      "alternatif": null,
+      "ref": "KVKK_5",
+      "gecerlilik": "belirsiz",
+      "tek_sefer": true
+    },
+    {
+      "id": "fesih_zor",
+      "turler": [
+        "hizmet"
+      ],
+      "risk": "orta",
+      "kategori": "Fesih",
+      "baslik": "İptal etmek zorlaştırılmış",
+      "desenler": [
+        [
+          "noter|iadeli taahhütlü|şahsen (başvur|gel)|ıslak imzalı",
+          "fes|iptal|sona erdir"
+        ]
+      ],
+      "sade": "Aboneliği iptal etmek için noter, şahsen başvuru gibi zahmetli yollar şart koşulmuş.",
+      "neden": "Abonelik sözleşmelerinde fesih, en az sözleşmenin kurulduğu kadar kolay bir yöntemle yapılabilmelidir.",
+      "oneri": "Online/çağrı merkezi üzerinden iptal imkânını yazdırın; iptal talebinizi yazılı (e-posta, KEP) delillendirin.",
+      "alternatif": "Müşteri sözleşmeyi, sözleşmenin kurulduğu kanal dahil yazılı, elektronik ortam veya çağrı merkezi aracılığıyla feshedebilir.",
+      "ref": "ABONELIK_YON",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "genel_feragat",
+      "turler": [
+        "diger",
+        "hizmet",
+        "is",
+        "kira"
+      ],
+      "risk": "yuksek",
+      "kategori": "Hak kaybı",
+      "baslik": "Her türlü haktan önceden vazgeçiyorsunuz",
+      "desenler": [
+        [
+          "(her türlü|tüm|bütün) (hak|talep|itiraz)(lar)?(ın)?(dan|ten|tan|den)? (peşinen )?(feragat|vazgeç)|feragat ettiğini"
+        ]
+      ],
+      "sade": "Gelecekte doğabilecek tüm haklarınızdan şimdiden vazgeçtiğinizi kabul ediyorsunuz.",
+      "neden": "Önceden hazırlanmış standart maddelerle yapılan genel feragatler, dürüstlük kuralına aykırıysa geçersiz sayılabilir.",
+      "oneri": "Bu ifadenin çıkarılmasını isteyin.",
+      "alternatif": null,
+      "ref": "TBK_20_25",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "yuksek_faiz",
+      "turler": [
+        "diger",
+        "hizmet",
+        "is",
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Faiz",
+      "baslik": "Gecikmeye yüksek faiz uygulanıyor",
+      "desenler": [
+        [
+          "(aylık|günlük) %\\s?\\d|%\\s?\\d+[^.]{0,40}(gecikme|temerrüt) faiz|(gecikme|temerrüt) faiz[^.]{0,40}%\\s?\\d"
+        ]
+      ],
+      "sade": "Geç ödemelerde uygulanacak faiz oranı yüksek olabilir.",
+      "neden": "Aylık bazda verilen oranlar yıllık hesapta çok yüksek tutarlara ulaşır.",
+      "oneri": "Oranı yıllığa çevirip kontrol edin; kanuni faiz oranının uygulanmasını isteyin.",
+      "alternatif": null,
+      "ref": null,
+      "gecerlilik": "belirsiz"
+    },
+    {
+      "id": "alt_kira_yasak",
+      "turler": [
+        "kira"
+      ],
+      "risk": "dusuk",
+      "kategori": "Kullanım",
+      "baslik": "Evi başkasına kiralamak veya devretmek yasak",
+      "desenler": [
+        [
+          "başkasına (kirala|devred|devret|bırak)|alt kira|kısmen veya tamamen kiraya veremez|ortak (alamaz|alınamaz)"
+        ]
+      ],
+      "sade": "Ev sahibinin izni olmadan evi başkasına kiralayamaz, devredemez veya yanınıza ev arkadaşı alamazsınız.",
+      "neden": "Bu madde genelde geçerlidir; ancak ev arkadaşıyla yaşamayı planlıyorsanız sorun olabilir.",
+      "oneri": "Ev arkadaşı planınız varsa bunu sözleşmeye açıkça yazdırın.",
+      "alternatif": null,
+      "ref": null,
+      "gecerlilik": "gecerli_ama_riskli",
+      "tek_sefer": true
+    },
+    {
+      "id": "evcil_hayvan",
+      "turler": [
+        "kira"
+      ],
+      "risk": "dusuk",
+      "kategori": "Kullanım",
+      "baslik": "Evcil hayvan kısıtlaması",
+      "desenler": [
+        [
+          "evcil hayvan|hayvan besle|kedi|köpek"
+        ]
+      ],
+      "sade": "Evde evcil hayvan beslemeniz kısıtlanmış veya yasaklanmış.",
+      "neden": "Sözleşmeye aykırılık tahliye sebebi olarak ileri sürülebilir.",
+      "oneri": "Hayvanınız varsa izni sözleşmeye yazdırın.",
+      "alternatif": null,
+      "ref": null,
+      "gecerlilik": "gecerli_ama_riskli",
+      "tek_sefer": true
+    },
+    {
+      "id": "fazla_mesai_dahil",
+      "turler": [
+        "is"
+      ],
+      "risk": "orta",
+      "kategori": "Fazla mesai",
+      "baslik": "Fazla mesai ücretin içinde sayılmış",
+      "desenler": [
+        [
+          "fazla (mesai|çalışma)",
+          "ücret(e|in)? (dahil|içinde|kapsamında)|ayrıca (ücret )?ödenmez|ücret ödenmeyece|karşılığı ödenmez"
+        ]
+      ],
+      "sade": "Mesai dışında çalışsanız bile bunun için ayrıca para ödenmeyeceği, maaşınızın içinde sayıldığı yazıyor.",
+      "neden": "Haftalık 45 saati aşan çalışma için en az yüzde elli zamlı ücret ödenmesi gerekir. Mahkemeler 'ücrete dahil' maddesini yalnızca yıllık 270 saate kadar ve ücret buna uygunsa kabul edebilir; sınırsız fazla mesai ücretsiz yaptırılamaz.",
+      "oneri": "Fazla mesainin nasıl ödeneceğini (yüzde elli zamlı ya da serbest zaman) yazdırın ve çalıştığınız saatleri kaydedin.",
+      "alternatif": "Haftalık 45 saati aşan çalışmalar fazla çalışma sayılır ve her saat için yüzde elli zamlı ücret ödenir ya da işçinin talebiyle serbest zaman olarak kullandırılır.",
+      "ref": "IK_41",
+      "gecerlilik": "belirsiz"
+    },
+    {
+      "id": "rekabet_yasagi",
+      "turler": [
+        "is"
+      ],
+      "risk": "orta",
+      "kategori": "Rekabet yasağı",
+      "baslik": "İşten ayrılınca rakip firmada çalışma yasağı",
+      "desenler": [
+        [
+          "rekabet (yasağı|etmeme|etmeyece)|rakip (firma|şirket|işletme)|benzer (bir )?(işte|faaliyette|sektörde) (çalış|bulun)"
+        ]
+      ],
+      "sade": "İşten ayrıldıktan sonra belirli bir süre aynı sektörde ya da rakip bir şirkette çalışamayacağınız yazıyor.",
+      "neden": "Rekabet yasağı geçerli olabilir ama yer, süre ve iş türü bakımından sınırlı olmalı ve kural olarak iki yılı aşamaz. Çok geniş bir yasak mesleğinizi yapmanızı engelleyebilir; ihlalde ağır ceza istenebilir.",
+      "oneri": "Yasağın süresini (en fazla 2 yıl), şehrini ve kapsadığı işi daraltın. Mümkünse yasak süresince size ödeme yapılmasını isteyin.",
+      "alternatif": "İşçi, iş sözleşmesinin sona ermesinden itibaren 1 yıl süreyle, yalnızca ……… ilinde ve işverenle doğrudan rekabet eden ……… alanında faaliyet göstermeyecektir.",
+      "ref": "TBK_445",
+      "gecerlilik": "gecerli_ama_riskli"
+    },
+    {
+      "id": "cezai_sart_isci",
+      "turler": [
+        "is"
+      ],
+      "risk": "yuksek",
+      "kategori": "Cezai şart",
+      "baslik": "Yalnızca çalışana ceza öngörülmüş",
+      "desenler": [
+        [
+          "cezai şart|ceza olarak|tazminat olarak",
+          "işçi|çalışan|personel"
+        ]
+      ],
+      "sade": "Sözleşmeyi bozarsanız ya da erken ayrılırsanız size ceza ödetileceği yazıyor; işveren için benzer bir ceza yok.",
+      "neden": "Hizmet sözleşmelerinde yalnızca işçi aleyhine konan ceza koşulu geçersizdir. Karşılıklı olsa bile işçinin yükü işverenden ağır olamaz. Rekabet yasağına bağlanan ceza bu kuralın istisnasıdır.",
+      "oneri": "Cezanın karşılıklı ve eşit olmasını isteyin ya da maddenin çıkarılmasını talep edin.",
+      "alternatif": "Taraflardan hangisi sözleşmeyi haklı bir neden olmaksızın süresinden önce sona erdirirse, diğer tarafa ……… TL ceza koşulu öder.",
+      "ref": "TBK_420",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "egitim_gideri",
+      "turler": [
+        "is"
+      ],
+      "risk": "orta",
+      "kategori": "Eğitim gideri",
+      "baslik": "Ayrılırsanız eğitim masrafları geri isteniyor",
+      "desenler": [
+        [
+          "eğitim|kurs|sertifika",
+          "gider|masraf|bedel|ücret",
+          "iade|geri öde|tazmin|karşıla"
+        ]
+      ],
+      "sade": "Size verilen eğitimin masrafını, belirli bir süre dolmadan işten ayrılırsanız geri ödemeniz isteniyor.",
+      "neden": "Bu tür madde geçerli olabilir, ancak yalnızca gerçekten yapılan ve belgelenen giderle sınırlı olmalı, çalıştığınız süreye göre azalmalıdır. Sabit ve yüksek bir tutar ceza niteliği taşıyabilir.",
+      "oneri": "Tutarın belgelenmiş gerçek gider olmasını ve çalıştığınız her ay için oransal olarak azalmasını yazdırın.",
+      "alternatif": "İşçi, eğitimin tamamlanmasından itibaren 12 ay dolmadan istifa ederse, işverenin belgelenmiş eğitim giderini çalışmadığı süreyle orantılı olarak öder.",
+      "ref": "TBK_420",
+      "gecerlilik": "gecerli_ama_riskli"
+    },
+    {
+      "id": "ucret_kesinti",
+      "turler": [
+        "is"
+      ],
+      "risk": "orta",
+      "kategori": "Ücret kesintisi",
+      "baslik": "Maaştan kesinti yapılabileceği yazıyor",
+      "desenler": [
+        [
+          "(ücret|maaş)(ın|ından|tan|ten|ından)? (kes|kesinti)|(ücret|maaş)tan (kes|düş)|kesinti yap"
+        ]
+      ],
+      "sade": "Belirli durumlarda maaşınızdan para kesilebileceği yazıyor.",
+      "neden": "Ücret kesme cezası yalnızca sözleşmede açıkça yazılı sebeplerle verilebilir ve bir ayda iki günlük ücreti aşamaz. 'İşverenin uygun göreceği hâllerde' gibi belirsiz ifadeler kabul edilmez.",
+      "oneri": "Kesinti sebeplerinin tek tek yazılmasını ve ayda iki günlük ücret sınırının belirtilmesini isteyin.",
+      "alternatif": null,
+      "ref": "IK_38",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "izin_feragat",
+      "turler": [
+        "is"
+      ],
+      "risk": "yuksek",
+      "kategori": "Yıllık izin",
+      "baslik": "Yıllık izin hakkı kısıtlanmış",
+      "desenler": [
+        [
+          "yıllık (ücretli )?izin",
+          "kullan(dırıl)?maz|kullanılmaz|feragat|vazgeç|ücrete dahil|paraya çevril|ödenerek"
+        ]
+      ],
+      "sade": "Yıllık izninizi kullanamayacağınız, izinden vazgeçtiğiniz ya da iznin parayla karşılanacağı yazıyor.",
+      "neden": "Yıllık ücretli izin hakkından vazgeçilemez ve iş sürerken paraya çevrilemez. Bu madde geçersizdir.",
+      "oneri": "Maddenin çıkarılmasını isteyin; izin günlerinizi yazılı olarak kayıt altına alın.",
+      "alternatif": "İşçi, kanunda belirtilen yıllık ücretli izin haklarından tam olarak yararlanır.",
+      "ref": "IK_53",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "kidem_feragat",
+      "turler": [
+        "is"
+      ],
+      "risk": "yuksek",
+      "kategori": "Kıdem tazminatı",
+      "baslik": "Kıdem tazminatından önceden vazgeçiliyor",
+      "desenler": [
+        [
+          "kıdem (tazminatı)?",
+          "feragat|vazgeç|talep (etmeye|edemez|etmeyece)|ödenmeyece|ödenmez|hakkı (yoktur|olmayacak)"
+        ]
+      ],
+      "sade": "İşten ayrıldığınızda kıdem tazminatı istemeyeceğinizi şimdiden kabul ettiğiniz yazıyor.",
+      "neden": "Kıdem tazminatı hakkı kanundan doğar; işe girerken imzalanan bir maddeyle önceden ortadan kaldırılamaz.",
+      "oneri": "Bu maddeyi imzalamayın ya da çıkarılmasını isteyin.",
+      "alternatif": null,
+      "ref": "IK_KIDEM",
+      "gecerlilik": "gecersiz_olabilir"
+    },
+    {
+      "id": "tek_tarafli_gorev_yer",
+      "turler": [
+        "is"
+      ],
+      "risk": "orta",
+      "kategori": "Görev ve yer değişikliği",
+      "baslik": "İşveren görevinizi veya şehrinizi tek başına değiştirebiliyor",
+      "desenler": [
+        [
+          "(başka|farklı|diğer) (bir )?(şeh(i)?r|il|işyer|şube|görev|departman|birim)|(görev|iş) yeri(ni)? değiştir|naklen|tayin",
+          "işveren|şirket|uygun gör|dilediği|gerekli gör|kabul eder"
+        ]
+      ],
+      "sade": "Şirketin sizi başka bir şehre, şubeye ya da göreve kendi kararıyla gönderebileceği, sizin bunu şimdiden kabul ettiğiniz yazıyor.",
+      "neden": "Çalışma koşullarında esaslı değişiklik ancak yazılı bildirimle yapılabilir ve kabul etmediğiniz değişiklik sizi bağlamaz. Ancak sözleşmede açık bir 'nakil' maddesi varsa ileride buna dayanılabilir.",
+      "oneri": "Naklin hangi şehirlerle sınırlı olduğunu, masrafların kimde olduğunu ve önceden ne kadar süre bildirileceğini yazdırın.",
+      "alternatif": "İşverenin görev yeri veya görev değişikliği talepleri en az 30 gün önceden yazılı olarak bildirilir ve işçinin yazılı onayına tabidir.",
+      "ref": "IK_22",
+      "gecerlilik": "belirsiz"
+    },
+    {
+      "id": "ek_tahliye_sebebi",
+      "turler": [
+        "kira"
+      ],
+      "risk": "orta",
+      "kategori": "Fesih",
+      "baslik": "Sözleşmeye ek tahliye sebebi eklenmiş",
+      "desenler": [
+        [
+          "tahliye sebebi|fesih sebebi|tahliye nedeni"
+        ]
+      ],
+      "sade": "Kanunda sayılmayan bir durumun (ör. abonelik işlemlerinin geç yapılması) tahliye sebebi olacağı yazıyor.",
+      "neden": "Konut kirasında ev sahibinin sözleşmeyi sona erdirme sebepleri kanunda sınırlı olarak sayılmıştır; sözleşmeye eklenen ek tahliye sebepleri kiracı aleyhine geçersiz sayılabilir.",
+      "oneri": "Bu ifadenin çıkarılmasını isteyin; yükümlülüğü yerine getirdiğinizi belgeleyin.",
+      "alternatif": null,
+      "ref": "TBK_347",
+      "gecerlilik": "gecersiz_olabilir",
+      "tek_sefer": true
+    }
+  ],
+  "eksik_kontrolleri": [
+    {
+      "id": "eksik_depozito_iade",
+      "turler": [
+        "kira"
+      ],
+      "baslik": "Depozito iade süresi ve şekli yazılmamış",
+      "aciklama": "Depozitonun ne zaman ve hangi hesaba iade edileceği belirtilmemiş. İade süresini (ör. 30 gün) yazdırın.",
+      "kosul": "depozito|güvence bedeli|teminat",
+      "aranan": "iade"
+    },
+    {
+      "id": "eksik_demirbas",
+      "turler": [
+        "kira"
+      ],
+      "baslik": "Demirbaş listesi / teslim tutanağı yok",
+      "aciklama": "Evde bulunan eşyalar ve evin teslimdeki durumu kayda geçirilmemiş. Çıkışta 'bu hasar sizden' tartışmasının önüne geçmek için fotoğraflı teslim tutanağı hazırlayın.",
+      "kosul": null,
+      "aranan": "demirbaş|tutanak|teslim (tutanağı|belgesi)|mevcut durum|fotoğraf"
+    },
+    {
+      "id": "eksik_odeme_yontemi",
+      "turler": [
+        "kira"
+      ],
+      "baslik": "Kiranın nasıl ödeneceği belirsiz",
+      "aciklama": "Kiranın banka havalesi/EFT ile hangi hesaba ödeneceği yazılmamış. Banka yoluyla ödeme hem delil oluşturur hem de konut kiralarında vergisel yükümlülükler açısından önemlidir.",
+      "kosul": null,
+      "aranan": "banka|hesab|havale|eft|ıban|\\[iban\\]"
+    },
+    {
+      "id": "eksik_artis",
+      "turler": [
+        "kira"
+      ],
+      "baslik": "Kira artış yöntemi yazılmamış",
+      "aciklama": "Yeni dönemde kiranın nasıl artırılacağı belirtilmemiş. Uyuşmazlığı önlemek için 'TÜFE 12 aylık ortalama değişim oranında' ifadesini yazdırın.",
+      "kosul": null,
+      "aranan": "artış|artırıl|tüfe|üfe|zam"
+    },
+    {
+      "id": "eksik_sure",
+      "turler": [
+        "kira",
+        "hizmet"
+      ],
+      "baslik": "Başlangıç tarihi veya süre belirsiz",
+      "aciklama": "Sözleşmenin başlangıç tarihi ya da süresi bulunamadı. Bildirim sürelerinin doğru hesaplanabilmesi için bu bilgiler açıkça yazılmalı.",
+      "kosul": null,
+      "aranan": "başlangıç|süre(si)?\\s*:|\\d+\\s*(yıl|ay)\\b|\\d{1,2}[./]\\d{1,2}[./]\\d{4}"
+    },
+    {
+      "id": "eksik_fesih_yolu",
+      "turler": [
+        "hizmet"
+      ],
+      "baslik": "Nasıl iptal edeceğiniz yazılmamış",
+      "aciklama": "Sözleşmeyi sona erdirmenin yolu (e-posta, uygulama, çağrı merkezi) ve bildirim süresi belirtilmemiş.",
+      "kosul": null,
+      "aranan": "fes|iptal|sona erdir"
+    },
+    {
+      "id": "eksik_ucret",
+      "turler": [
+        "hizmet"
+      ],
+      "baslik": "Ücret açıkça belirtilmemiş",
+      "aciklama": "Ödeyeceğiniz toplam tutar ya da aylık ücret bulunamadı. Vergiler dahil toplam tutarı yazılı olarak isteyin.",
+      "kosul": null,
+      "aranan": "ücret|bedel|fiyat|tl\\b|₺|türk lirası"
+    },
+    {
+      "id": "eksik_is_ucret",
+      "turler": [
+        "is"
+      ],
+      "baslik": "Maaşınız açıkça yazılmamış",
+      "aciklama": "Brüt ya da net maaş tutarı ve ödeme günü bulunamadı. Tutarın 'net' mi 'brüt' mü olduğunu mutlaka yazdırın.",
+      "kosul": null,
+      "aranan": "(ücret|maaş)[^.]{0,60}(\\d|tl|₺|türk lirası)"
+    },
+    {
+      "id": "eksik_is_saat",
+      "turler": [
+        "is"
+      ],
+      "baslik": "Çalışma saatleri yazılmamış",
+      "aciklama": "Haftalık çalışma süresi ve mesai saatleri belirtilmemiş. Fazla mesainin hesaplanabilmesi için bu bilgi gerekli.",
+      "kosul": null,
+      "aranan": "saat|mesai|çalışma süresi"
+    },
+    {
+      "id": "eksik_is_gorev",
+      "turler": [
+        "is"
+      ],
+      "baslik": "Göreviniz tanımlanmamış",
+      "aciklama": "Hangi pozisyonda ve hangi işleri yapacağınız yazılmamış. Bu, ileride size her türlü işin verilmesine yol açabilir.",
+      "kosul": null,
+      "aranan": "görev|pozisyon|unvan|kadro"
+    }
+  ]
+}
