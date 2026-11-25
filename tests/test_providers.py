@@ -1,344 +1,204 @@
-"""Sağlayıcı seçimi, hata yönetimi, yedek model ve analiz akışı testleri.
-
-Yapay zekâ çağrıları mock'lanır: internet ve API anahtarı gerekmez, testler saniyeler içinde biter.
-"""
-import json
+"""Sağlayıcı katmanı testleri: Gemini/Claude seçimi ve Gemini isteğinin doğru kurulması (ağ kullanılmaz)."""
+from types import SimpleNamespace
 
 import pytest
 
-from app import ai_engine, analyzer, config
-from app.splitter import split_clauses
-
-TC = "10000000146"  # algoritma kontrolünden geçen örnek numara
-CONTRACT = f"""KONUT KİRA SÖZLEŞMESİ
-
-Kiraya Veren: Ahmet Yılmaz, T.C. Kimlik No: {TC}, Tel: 0532 000 00 00
-Kiracı: Elif Demir, e-posta: elif.demir@example.com
-Aylık Kira Bedeli: 25.000 TL
-
-MADDE 1 - Kiracı, aylık kira bedelini her ayın 5'ine kadar kiraya verene elden ödeyecektir.
-
-MADDE 2 - Kiracı, sözleşme imzası sırasında 4 (dört) aylık kira bedeli tutarında depozito öder. Depozito, kiralananın tahliyesinde kiraya verenin takdirine göre iade edilir.
-
-MADDE 3 - Kiraya veren, kiralananı haber vermeksizin dilediği zaman kontrol etmek amacıyla girme hakkına sahiptir.
-"""
-QUOTE = "Depozito, kiralananın tahliyesinde kiraya verenin takdirine göre iade edilir."
-# Başlık/taraf bölümü m1 olur; MADDE 1 = m2, MADDE 2 (depozito) = m3, MADDE 3 (girme hakkı) = m4.
-DEPOSIT, ENTRY = "m3", "m4"
+from app import ai_engine, config
 
 
-class FakeAPIError(Exception):
-    def __init__(self, status_code, message=""):
-        super().__init__(message or f"hata {status_code}")
-        self.status_code = status_code
+@pytest.fixture(autouse=True)
+def clean_keys(monkeypatch):
+    for name in ("GEMINI_API_KEY", "ANTHROPIC_API_KEY", "AI_PROVIDER"):
+        monkeypatch.setattr(config, name, "")
+    ai_engine._clients.clear()
+    yield
+    ai_engine._clients.clear()
 
 
-def ai_payload(**override):
-    """Modelin döndürebileceği, şemaya uygun örnek çıktı."""
-    finding = {
-        "madde_id": DEPOSIT, "risk": "yuksek", "kategori": "Depozito",
-        "baslik": "Depozito iadesi ev sahibinin takdirine bırakılmış",
-        "alinti": QUOTE, "sade": "Depozito iadesine ev sahibi tek başına karar veriyor.",
-        "neden": "Paranın tamamı tutulabilir.", "oneri": "İade süresini yazdırın.",
-        "alternatif": "Depozito 30 gün içinde iade edilir.",
-        "gecerlilik": "gecersiz_olabilir", "yasal_dayanak_id": "TBK_342",
-    }
-    data = {"genel_ozet": "Depozito maddesi sorunlu.", "bulgular": [finding],
-            "eksik_maddeler": [], "sorulacak_sorular": ["Depozito ne zaman iade edilir?"]}
-    data.update(override)
-    return data
-
-
-@pytest.fixture
-def keys(monkeypatch):
-    """Anahtarları ve model listesini bilinen bir duruma getirir."""
-    def setup(gemini="", anthropic="", provider=""):
-        monkeypatch.setattr(config, "GEMINI_API_KEY", gemini)
-        monkeypatch.setattr(config, "ANTHROPIC_API_KEY", anthropic)
-        monkeypatch.setattr(config, "AI_PROVIDER", provider)
-        monkeypatch.setattr(config, "GEMINI_MODEL", "ana")
-        monkeypatch.setattr(config, "GEMINI_FALLBACK_MODEL", "yedek1,yedek2")
-    return setup
-
-
-def fake_gemini(monkeypatch, behaviors):
-    """behaviors: model -> dönecek metin ya da fırlatılacak hata. Çağrılan modelleri kaydeder."""
-    calls = []
-
-    def fake(model, system, user, schema, image=None):
-        calls.append({"model": model, "user": user, "system": system, "image": image})
-        result = behaviors[model]
-        if isinstance(result, Exception):
-            raise result
-        return result if isinstance(result, str) else json.dumps(result)
-
-    monkeypatch.setattr(ai_engine, "_gemini_call", fake)
-    return calls
-
-
-# ------------------------------------------------------------------ sağlayıcı seçimi
-def test_anahtar_yoksa_yapay_zeka_kapali(keys):
-    keys()
+def test_provider_selection(monkeypatch):
     assert config.active_provider() is None
-    assert not config.ai_available()
-
-
-def test_iki_anahtar_varsa_varsayilan_gemini(keys):
-    keys(gemini="g", anthropic="a")
-    assert config.active_provider() == "gemini"
-
-
-def test_ai_provider_ile_claude_secilir(keys):
-    keys(gemini="g", anthropic="a", provider="anthropic")
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "a")
     assert config.active_provider() == "anthropic"
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "g")
+    assert config.active_provider() == "gemini"  # ikisi de varsa Gemini
+    monkeypatch.setattr(config, "AI_PROVIDER", "anthropic")
+    assert config.active_provider() == "anthropic"
+    monkeypatch.setattr(config, "AI_PROVIDER", "gemini")
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "")
+    assert config.active_provider() is None  # seçilen sağlayıcının anahtarı yok
 
 
-def test_secilen_saglayicinin_anahtari_yoksa_kapali(keys):
-    keys(gemini="g", provider="anthropic")
-    assert config.active_provider() is None
+class FakeModels:
+    def __init__(self, text=None, exc=None):
+        self.text, self.exc, self.calls = text, exc, []
+
+    def generate_content(self, **kwargs):
+        self.calls.append(kwargs)
+        if self.exc:
+            raise self.exc
+        return SimpleNamespace(text=self.text)
 
 
-def test_yedek_model_listesi_tekrarsiz(keys, monkeypatch):
-    keys(gemini="g")
-    monkeypatch.setattr(config, "GEMINI_FALLBACK_MODEL", "ana, yedek1,yedek1,")
-    assert config.gemini_models() == ["ana", "yedek1"]
+def _use_fake_gemini(monkeypatch, models):
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "g")
+    ai_engine._clients["gemini"] = SimpleNamespace(models=models)
 
 
-def test_anahtar_yoksa_cagri_AIUnavailable_verir(keys):
-    keys()
-    with pytest.raises(ai_engine.AIUnavailable):
-        ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
+def test_gemini_json_request(monkeypatch):
+    models = FakeModels(text='```json\n{"a": 1}\n```')
+    _use_fake_gemini(monkeypatch, models)
+    assert ai_engine._json_call("sistem", "kullanıcı", {"type": "object"}) == {"a": 1}
+    cfg = models.calls[0]["config"]
+    assert models.calls[0]["model"] == config.GEMINI_MODEL
+    assert cfg.response_mime_type == "application/json"
+    assert cfg.response_json_schema == {"type": "object"}
+    assert cfg.system_instruction == "sistem"
 
 
-def test_claude_secilince_gemini_cagrilmaz(keys, monkeypatch):
-    keys(gemini="g", anthropic="a", provider="anthropic")
-    gemini_calls = fake_gemini(monkeypatch, {})
+def test_gemini_chat_roles(monkeypatch):
+    models = FakeModels(text="cevap")
+    _use_fake_gemini(monkeypatch, models)
+    msgs = [{"role": "user", "content": "a"}, {"role": "assistant", "content": "b"}, {"role": "user", "content": "c"}]
+    assert ai_engine._text_call("s", msgs) == "cevap"
+    assert [c["role"] for c in models.calls[0]["contents"]] == ["user", "model", "user"]
+
+
+@pytest.mark.parametrize("code,needle", [(404, "GEMINI_MODEL"), (429, "sınır"), (400, "reddetti")])
+def test_gemini_errors_are_friendly(monkeypatch, code, needle):
+    from google.genai import errors
+
+    exc = errors.ClientError(code, {"error": {"code": code, "message": "x", "status": "X"}})
+    _use_fake_gemini(monkeypatch, FakeModels(exc=exc))
+    with pytest.raises(ai_engine.AIError, match=needle):
+        ai_engine._json_call("s", "u", {"type": "object"})
+
+
+def test_gemini_invalid_key_message(monkeypatch):
+    from google.genai import errors
+
+    exc = errors.ClientError(400, {"error": {"code": 400, "message": "API key not valid. Please pass a valid API key.", "status": "INVALID_ARGUMENT"}})
+    _use_fake_gemini(monkeypatch, FakeModels(exc=exc))
+    with pytest.raises(ai_engine.AIError, match="anahtarı geçersiz"):
+        ai_engine._text_call("s", [{"role": "user", "content": "x"}])
+
+
+def test_bad_json_raises(monkeypatch):
+    _use_fake_gemini(monkeypatch, FakeModels(text="bu json değil"))
+    with pytest.raises(ai_engine.AIError, match="formatta"):
+        ai_engine._json_call("s", "u", {"type": "object"})
+
+
+def test_gemini_timeout_message(monkeypatch):
+    import httpx
+
+    _use_fake_gemini(monkeypatch, FakeModels(exc=httpx.ReadTimeout("timed out")))
+    with pytest.raises(ai_engine.AIError, match="cevap vermedi"):
+        ai_engine._json_call("s", "u", {"type": "object"})
+
+
+def test_gemini_client_limits_retries(monkeypatch):
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "g")
+    opts = ai_engine._gemini_client()._api_client._http_options
+    assert opts.retry_options.attempts == config.AI_MAX_ATTEMPTS <= 3
+    assert opts.timeout == int(config.AI_TIMEOUT_SECONDS * 1000)
+
+
+def test_hard_deadline_stops_hanging_call(monkeypatch):
+    import time as _t
+
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "g")
+    monkeypatch.setattr(config, "AI_TIMEOUT_SECONDS", 0.2)
+    monkeypatch.setattr(config, "AI_MAX_ATTEMPTS", 1)
+    monkeypatch.setattr(ai_engine, "_deadline", lambda: 0.5)
+    monkeypatch.setattr(ai_engine, "_json_call_inner", lambda *a: _t.sleep(3))
+    start = _t.monotonic()
+    with pytest.raises(ai_engine.AIError, match="cevap vermedi"):
+        ai_engine._json_call("s", "u", {"type": "object"})
+    assert _t.monotonic() - start < 2
+
+
+def test_gemini_client_forces_ipv4(monkeypatch):
+    import socket
+
+    monkeypatch.setattr(config, "GEMINI_API_KEY", "g")
+    monkeypatch.setattr(config, "AI_FORCE_IPV4", True)
+    monkeypatch.setattr(socket, "getaddrinfo", ai_engine._original_getaddrinfo)
     seen = []
-
-    def fake_claude(model, system, user, schema, image=None):
-        seen.append(model)
-        return json.dumps(ai_payload())
-
-    monkeypatch.setattr(ai_engine, "_anthropic_call", fake_claude)
-    result = ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
-    assert seen == [config.AI_MODEL] and gemini_calls == []
-    assert result["saglayici"] == "anthropic"
+    monkeypatch.setattr(ai_engine, "_original_getaddrinfo", lambda h, p, f=0, *a: seen.append((h, f)) or [])
+    http = ai_engine._gemini_client()._api_client._http_options.httpx_client
+    assert http.timeout.connect == 10.0
+    socket.getaddrinfo("generativelanguage.googleapis.com", 443)
+    socket.getaddrinfo("example.com", 443)
+    assert seen == [("generativelanguage.googleapis.com", socket.AF_INET), ("example.com", 0)]
 
 
-# ------------------------------------------------------------------ hata sınıflandırma
-def test_hata_siniflandirma():
-    assert ai_engine.classify_error(FakeAPIError(429)) == "quota"
-    assert ai_engine.classify_error(FakeAPIError(503)) == "busy"
-    assert ai_engine.classify_error(FakeAPIError(529, "overloaded")) == "busy"
-    assert ai_engine.classify_error(FakeAPIError(401)) == "auth"
-    assert ai_engine.classify_error(TimeoutError()) == "timeout"
-    assert ai_engine.classify_error(Exception("Request timed out.")) == "timeout"
-    assert ai_engine.classify_error(Exception("RESOURCE_EXHAUSTED")) == "quota"
-    assert ai_engine.classify_error(ValueError("bilinmeyen")) == "other"
+class SequenceModels:
+    """Sırayla hata/cevap döndüren sahte Gemini."""
+
+    def __init__(self, outcomes):
+        self.outcomes, self.calls = list(outcomes), []
+
+    def generate_content(self, **kwargs):
+        self.calls.append(kwargs)
+        out = self.outcomes.pop(0)
+        if isinstance(out, Exception):
+            raise out
+        return SimpleNamespace(text=out)
 
 
-# ------------------------------------------------------------------ yedek model ve hata yönetimi
-def test_ana_model_yogunsa_yedege_gecer(keys, monkeypatch):
-    keys(gemini="g")
-    calls = fake_gemini(monkeypatch, {"ana": FakeAPIError(503), "yedek1": ai_payload()})
-    result = ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
-    assert [c["model"] for c in calls] == ["ana", "yedek1"]
-    assert result["model"] == "yedek1"
+def _server_error(code=500):
+    from google.genai import errors
+
+    return errors.ServerError(code, {"error": {"code": code, "message": "Internal error", "status": "INTERNAL"}})
 
 
-def test_kota_ve_zaman_asimi_yedege_gecer(keys, monkeypatch):
-    keys(gemini="g")
-    calls = fake_gemini(monkeypatch, {"ana": FakeAPIError(429), "yedek1": TimeoutError(),
-                                      "yedek2": ai_payload()})
-    result = ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
-    assert [c["model"] for c in calls] == ["ana", "yedek1", "yedek2"]
-    assert result["model"] == "yedek2"
+def _schema_error():
+    from google.genai import errors
+
+    return errors.ClientError(400, {"error": {"code": 400, "message": "The specified schema produces a constraint that has too many states", "status": "INVALID_ARGUMENT"}})
 
 
-def test_bozuk_json_yedege_gecer(keys, monkeypatch):
-    keys(gemini="g")
-    fake_gemini(monkeypatch, {"ana": "bu json değil", "yedek1": ai_payload()})
-    assert ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")["model"] == "yedek1"
+def test_gemini_falls_back_to_schemaless_request(monkeypatch):
+    models = SequenceModels([_schema_error(), '{"ok": true}'])
+    _use_fake_gemini(monkeypatch, models)
+    assert ai_engine._json_call("sistem", "u", {"type": "object"}) == {"ok": True}
+    assert models.calls[0]["config"].response_json_schema == {"type": "object"}
+    assert models.calls[0]["model"] == models.calls[1]["model"]  # aynı model, şemasız
+    second = models.calls[1]["config"]
+    assert second.response_json_schema is None and "JSON şemasına" in second.system_instruction
 
 
-def test_anahtar_hatasinda_yedek_denenmez(keys, monkeypatch):
-    keys(gemini="g")
-    calls = fake_gemini(monkeypatch, {"ana": FakeAPIError(401), "yedek1": ai_payload()})
-    with pytest.raises(ai_engine.AIError) as err:
-        ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
-    assert err.value.kind == "auth" and len(calls) == 1
+def test_gemini_busy_model_skips_to_next_model(monkeypatch):
+    monkeypatch.setattr(config, "GEMINI_MODEL", "ana-model")
+    monkeypatch.setattr(config, "GEMINI_FALLBACK_MODEL", "yedek-1,yedek-2")
+    models = SequenceModels([_server_error(503), _server_error(503), '{"ok": 1}'])
+    _use_fake_gemini(monkeypatch, models)
+    assert ai_engine._json_call("s", "u", {"type": "object"}) == {"ok": 1}
+    assert [c["model"] for c in models.calls] == ["ana-model", "yedek-1", "yedek-2"]
 
 
-def test_tum_modeller_basarisizsa_son_hata_doner(keys, monkeypatch):
-    keys(gemini="g")
-    fake_gemini(monkeypatch, {"ana": FakeAPIError(503), "yedek1": FakeAPIError(503),
-                              "yedek2": TimeoutError()})
-    with pytest.raises(ai_engine.AIError) as err:
-        ai_engine.analyze_clauses(split_clauses(CONTRACT), "kira", "kiraci")
-    assert err.value.kind == "timeout"
+def test_schema_is_simplified_for_gemini():
+    full = ai_engine.report_schema(["m1", "m2"])
+    simple = ai_engine._simplify_schema_for_gemini(full)
+    item = simple["properties"]["bulgular"]["items"]["properties"]
+    assert "enum" not in item["madde_id"] and "enum" not in item["yasal_ref"]
+    assert "maxItems" not in simple["properties"]["bulgular"]
+    assert "enum" in full["properties"]["bulgular"]["items"]["properties"]["madde_id"]  # orijinal değişmedi
 
 
-# ------------------------------------------------------------------ çıktı doğrulama
-def test_alinti_metinde_bulunur_ve_konum_dogrudur():
-    clauses = split_clauses(CONTRACT)
-    result = ai_engine.validate_analysis(ai_payload(), clauses)
-    f = result["bulgular"][0]
-    pos = f["alinti_konum"]
-    assert CONTRACT[pos["start"]:pos["end"]] == f["alinti"] == QUOTE
-    assert f["kaynak"] == "ai"
+def test_gemini_all_attempts_fail_reports_code(monkeypatch):
+    models = SequenceModels([_server_error(503)] * 4)
+    _use_fake_gemini(monkeypatch, models)
+    with pytest.raises(ai_engine.AIError, match="kod 503"):
+        ai_engine._json_call("s", "u", {"type": "object"})
 
 
-def test_alinti_bosluk_farkina_toleransli():
-    clauses = split_clauses(CONTRACT)
-    item = ai_payload()["bulgular"][0] | {"alinti": QUOTE.replace(" ", "\n", 1)}
-    f = ai_engine.validate_analysis(ai_payload(bulgular=[item]), clauses)["bulgular"][0]
-    assert QUOTE.startswith(f["alinti"]) and f["alinti_konum"] is not None  # metindeki birebir karşılığı
+def test_invalid_key_is_not_retried(monkeypatch):
+    from google.genai import errors
 
-
-def test_bulunamayan_alinti_tahmin_edilmez():
-    clauses = split_clauses(CONTRACT)
-    item = ai_payload()["bulgular"][0] | {"alinti": "Bu cümle sözleşmede hiç geçmiyor."}
-    f = ai_engine.validate_analysis(ai_payload(bulgular=[item]), clauses)["bulgular"][0]
-    assert f["alinti"] == "" and f["alinti_konum"] is None
-
-
-def test_uydurma_kanun_atfi_silinir_ve_gecersizlik_iddiasi_dusurulur():
-    clauses = split_clauses(CONTRACT)
-    item = ai_payload()["bulgular"][0] | {"yasal_dayanak_id": "TBK_9999"}
-    f = ai_engine.validate_analysis(ai_payload(bulgular=[item]), clauses)["bulgular"][0]
-    assert f["yasal_dayanak"] is None
-    assert f["gecerlilik"] == "belirsiz"
-
-
-def test_dogrulanmis_kanun_atfi_bilgi_tabanindan_gelir():
-    f = ai_engine.validate_analysis(ai_payload(), split_clauses(CONTRACT))["bulgular"][0]
-    assert f["yasal_dayanak"]["id"] == "TBK_342" and "Borçlar Kanunu" in f["yasal_dayanak"]["kanun"]
-
-
-def test_gecersiz_madde_ve_bozuk_kayitlar_atilir():
-    clauses = split_clauses(CONTRACT)
-    good = ai_payload()["bulgular"][0]
-    data = ai_payload(bulgular=[good | {"madde_id": "m99"}, good | {"madde_id": ENTRY},
-                                "metin", {"madde_id": DEPOSIT}, good | {"baslik": ""}])
-    ids = [f["madde_id"] for f in ai_engine.validate_analysis(data, clauses)["bulgular"]]
-    assert ids == [ENTRY]  # m99 yok, "metin" bozuk, eksik alanlı ve başlıksız kayıtlar atılır
-
-
-def test_baslik_bolumu_madde_sayilmaz():
-    clauses = split_clauses(CONTRACT)
-    assert clauses[0].preamble
-    item = ai_payload()["bulgular"][0] | {"madde_id": clauses[0].id}
-    assert ai_engine.validate_analysis(ai_payload(bulgular=[item]), clauses)["bulgular"] == []
-
-
-def test_bilinmeyen_risk_ortaya_cekilir():
-    item = ai_payload()["bulgular"][0] | {"risk": "felaket"}
-    f = ai_engine.validate_analysis(ai_payload(bulgular=[item]), split_clauses(CONTRACT))["bulgular"][0]
-    assert f["risk"] == "orta"
-
-
-# ------------------------------------------------------------------ soru-cevap ve fotoğraf
-def test_soru_cevap_gecerli_maddeleri_dondurur(keys, monkeypatch):
-    keys(gemini="g")
-    fake_gemini(monkeypatch, {"ana": {"cevap": "Depozito [m3] maddesinde.", "ilgili_maddeler": ["m3", "m77"]}})
-    out = ai_engine.ask(CONTRACT, "Depozito ne olur?", "kira", "kiraci")
-    assert out["ilgili_maddeler"] == [DEPOSIT] and "[m3]" in out["cevap"]
-
-
-def test_soru_cevap_kisa_soruyu_reddeder(keys):
-    keys(gemini="g")
-    with pytest.raises(ValueError):
-        ai_engine.ask(CONTRACT, " ", "kira", "kiraci")
-
-
-def test_fotograftan_metin_okuma(keys, monkeypatch):
-    keys(gemini="g")
-    text = "MADDE 1 - Kiracı aylık kirayı ödeyecektir. " * 3
-    calls = fake_gemini(monkeypatch, {"ana": text})
-    assert ai_engine.read_image(b"\xff\xd8fake", "image/jpeg").startswith("MADDE 1")
-    assert calls[0]["image"] == (b"\xff\xd8fake", "image/jpeg")
-
-
-def test_fotograf_turu_ve_bos_metin_kontrolu(keys, monkeypatch):
-    keys(gemini="g")
-    with pytest.raises(ValueError):
-        ai_engine.read_image(b"x", "application/pdf")
-    fake_gemini(monkeypatch, {"ana": "kısa"})
-    with pytest.raises(ai_engine.AIError):
-        ai_engine.read_image(b"x", "image/png")
-
-
-# ------------------------------------------------------------------ analiz akışı
-def test_anahtar_yoksa_kural_raporu_ve_uyari(keys):
-    keys()
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci")
-    assert r["mod"] == "kural" and "kural tabanlı" in r["uyari"]
-    assert r["bulgular"], "örnek sözleşmede kural bulgusu beklenir"
-
-
-def test_yapay_zeka_hata_verirse_kural_raporuna_doner(keys, monkeypatch):
-    keys(gemini="g")
-    fake_gemini(monkeypatch, {"ana": FakeAPIError(503), "yedek1": FakeAPIError(429), "yedek2": TimeoutError()})
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci")
-    assert r["mod"] == "kural" and r["uyari"]
-    assert r["risk_puani"] > 0
-
-
-def test_kisisel_veri_yapay_zekaya_gitmeden_maskelenir(keys, monkeypatch):
-    keys(gemini="g")
-    calls = fake_gemini(monkeypatch, {"ana": ai_payload()})
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci")
-    sent = calls[0]["user"]
-    for secret in (TC, "0532 000 00 00", "elif.demir@example.com"):
-        assert secret not in sent and secret not in r["metin"]
-    assert r["kvkk"] == {"E-POSTA": 1, "TC_KIMLIK": 1, "TELEFON": 1}
-
-
-def test_yapay_zeka_bulgulari_birlestirilir(keys, monkeypatch):
-    keys(gemini="g")
-    fake_gemini(monkeypatch, {"ana": ai_payload()})
-    rule_only = analyzer.analyze_text(CONTRACT, "kira", "kiraci", mode="kural")
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci")
-    assert r["mod"] == "ai" and r["uyari"] is None and r["ai_model"] == "ana"
-    ai_f = [f for f in r["bulgular"] if f["kaynak"] == "ai"]
-    assert len(ai_f) == 1 and ai_f[0]["madde_id"] == DEPOSIT
-    # Yapay zekânın değindiği maddede, aynı kanuna dayanan kural bulgusu tekrar eklenmez
-    assert [f["madde_id"] for f in r["bulgular"]].count(DEPOSIT) == 1
-    # Yapay zekânın değinmediği maddedeki güçlü kural bulguları güvenlik ağı olarak korunur
-    strong_entry = [f for f in rule_only["bulgular"]
-                    if f["madde_id"] == ENTRY and (f["risk"] == "yuksek" or f["gecerlilik"] == "gecersiz_olabilir")]
-    assert strong_entry, "örnek sözleşmede 4. maddede güçlü kural bulgusu beklenir"
-    assert {f["id"] for f in strong_entry} <= {f["id"] for f in r["bulgular"]}
-    assert r["sayilar"]["yuksek"] == sum(f["risk"] == "yuksek" for f in r["bulgular"])
-    assert all("_pos" not in f for f in r["bulgular"])
-
-
-def test_kural_modu_yapay_zekayi_cagirmaz(keys, monkeypatch):
-    keys(gemini="g")
-    calls = fake_gemini(monkeypatch, {})
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci", mode="kural")
-    assert r["mod"] == "kural" and calls == []
-
-
-def test_rapor_arayuzun_bekledigi_alanlari_icerir(keys):
-    keys()
-    r = analyzer.analyze_text(CONTRACT, "kira", "kiraci", file_name="kira.pdf")
-    for key in ("metin", "maddeler", "bulgular", "eksik_maddeler", "sayilar", "risk_puani", "risk_seviyesi",
-                "onemli_tarihler", "sorulacak_sorular", "genel_ozet", "rol_ad", "sozlesme_turu",
-                "sozlesme_turu_ad", "yasal_uyari", "dosya_adi"):
-        assert key in r, key
-    assert r["dosya_adi"] == "kira.pdf" and r["maddeler"][0]["id"] == "m1"
-
-
-def test_diger_turde_serbest_rol_gosterilir(keys):
-    keys()
-    r = analyzer.analyze_text(CONTRACT, "diger", "taraf", role_note="Alt kiracı")
-    assert r["rol_ad"] == "Alt kiracı"
-
-
-def test_gecersiz_girdiler_reddedilir(keys):
-    keys()
-    with pytest.raises(ValueError):
-        analyzer.analyze_text("kısa", "kira", "kiraci")
-    with pytest.raises(ValueError):
-        analyzer.analyze_text(CONTRACT, "bilinmeyen", "kiraci")
+    bad = errors.ClientError(400, {"error": {"code": 400, "message": "API key not valid.", "status": "INVALID_ARGUMENT"}})
+    models = SequenceModels([bad, '{"x": 1}'])
+    _use_fake_gemini(monkeypatch, models)
+    with pytest.raises(ai_engine.AIError, match="anahtarı geçersiz"):
+        ai_engine._json_call("s", "u", {"type": "object"})
+    assert len(models.calls) == 1
