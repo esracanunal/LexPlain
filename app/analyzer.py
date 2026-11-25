@@ -1,136 +1,169 @@
-"""Analiz akışı: maskeleme → maddelere ayırma → kural motoru → yapay zekâ → birleştirme.
+"""Analiz akışını yönetir: maskeleme → maddelere ayırma → yapay zekâ + kural motoru → birleşik rapor."""
+import logging
+import re
 
-Yapay zekâ çalışmazsa (anahtar yok, kota, zaman aşımı…) kural tabanlı rapor döner ve
-kullanıcıya nedeni bildirilir; böylece site hiçbir durumda boş kalmaz.
-"""
-from . import ai_engine, config, rule_engine
+from . import ai_engine, rule_engine
 from .privacy import mask_personal_data
 from .report import (
-    CONTRACT_TYPES, ROLES, WEAK_ROLES, count_by_risk, normalize_role, risk_label, risk_score,
-    sort_findings, suggested_questions,
+    CONTRACT_TYPES, ROLES, count_by_risk, detect_contract_type, normalize_role,
+    risk_label, risk_score, sort_findings, suggested_questions,
 )
 from .splitter import split_clauses
 from .textutil import normalize_space, tr_lower
 
-LEGAL_NOTICE = ("LexPlain bilgilendirme amaçlıdır, hukuki danışmanlık değildir. "
-                "Önemli sözleşmelerde imzadan önce bir avukata danışın.")
+log = logging.getLogger("sade.analyzer")
 
-_FALLBACK_NOTICES = {
-    "unavailable": "Yapay zekâ anahtarı tanımlı olmadığı için temel inceleme (kural tabanlı) gösteriliyor.",
-    "timeout": "Yapay zekâ zamanında yanıt vermedi; temel inceleme (kural tabanlı) gösteriliyor. Daha sonra tekrar deneyebilirsiniz.",
-    "quota": "Yapay zekâ kullanım sınırına ulaşıldı; temel inceleme (kural tabanlı) gösteriliyor. Daha sonra tekrar deneyebilirsiniz.",
-    "busy": "Yapay zekâ şu anda yoğun; temel inceleme (kural tabanlı) gösteriliyor. Biraz sonra tekrar deneyebilirsiniz.",
-    "auth": "Yapay zekâ anahtarı geçersiz görünüyor; temel inceleme (kural tabanlı) gösteriliyor.",
-    "invalid": "Yapay zekâ anlaşılır bir sonuç üretemedi; temel inceleme (kural tabanlı) gösteriliyor.",
-}
-_FALLBACK_DEFAULT = "Yapay zekâ incelemesi tamamlanamadı; temel inceleme (kural tabanlı) gösteriliyor."
-
-
-def _is_strong(finding: dict) -> bool:
-    """Yapay zekâ kaçırdığında bile gösterilmeye değer, güçlü kural bulgusu mu?"""
-    return finding["risk"] == "yuksek" or finding["gecerlilik"] == "gecersiz_olabilir"
+DISCLAIMER = (
+    "LexPlain bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Önemli kararlar ve anlaşmazlıklar "
+    "için bir avukata ya da baronuzun adli yardım bürosuna başvurun."
+)
+# Kullanıcıya gösterilen mesajlar teknik ayrıntı içermez; ayrıntılar sunucu kayıtlarına yazılır.
+MSG_DETAILED_UNAVAILABLE = (
+    "Ayrıntılı inceleme şu an tamamlanamadı. Aşağıda temel kontrol sonuçları yer alıyor; "
+    "birkaç dakika sonra yeniden inceletebilirsiniz."
+)
+MSG_OTHER_BASIC_ONLY = (
+    "Bu sözleşme türü için ayrıntılı inceleme şu an yapılamadı. Yalnızca her sözleşmede görülebilen "
+    "genel riskli ifadeler kontrol edildi."
+)
 
 
-def _same(a: str, b: str) -> bool:
-    return tr_lower(a).strip(" .") == tr_lower(b).strip(" .")
-
-
-def merge(rule_report: dict, ai_result: dict, role: str) -> dict:
-    """Yapay zekâ ve kural bulgularını birleştirir.
-
-    Yapay zekâ bulguları esastır. Kural bulgularından yalnızca güçlü olanlar, yapay zekânın hiç
-    değinmediği maddelerde (ya da aynı kanun maddesine dayanan bulgusu olmayan maddelerde) eklenir.
-    """
-    ai_findings = list(ai_result["bulgular"])
-    covered = {}  # madde_id -> o maddede yapay zekânın dayandığı kanun kimlikleri
-    for f in ai_findings:
-        covered.setdefault(f["madde_id"], set())
-        if f["yasal_dayanak"]:
-            covered[f["madde_id"]].add(f["yasal_dayanak"]["id"])
-
-    findings = ai_findings
-    for f in rule_report["bulgular"]:
-        if not _is_strong(f):
-            continue
-        ref_id = f["yasal_dayanak"]["id"] if f["yasal_dayanak"] else None
-        if f["madde_id"] not in covered or (ref_id and ref_id not in covered[f["madde_id"]]):
-            findings.append(f)
-    findings = sort_findings(findings)
-
-    missing = list(rule_report["eksik_maddeler"])
-    missing += [m for m in ai_result["eksik_maddeler"] if not any(_same(m["baslik"], x["baslik"]) for x in missing)]
-
-    questions = []
-    if role in WEAK_ROLES:
-        for q in ai_result["sorulacak_sorular"] + suggested_questions(findings):
-            if not any(_same(q, x) for x in questions):
-                questions.append(q)
-        questions = questions[:5]
-
-    score = risk_score(findings, missing)
-    merged = dict(rule_report)
-    merged.update({
-        "mod": "ai",
-        "genel_ozet": ai_result["genel_ozet"] or rule_report["genel_ozet"],
-        "risk_puani": score,
-        "risk_seviyesi": risk_label(score),
-        "sayilar": count_by_risk(findings),
-        "bulgular": findings,
-        "eksik_maddeler": missing,
-        "sorulacak_sorular": questions,
-    })
-    return merged
-
-
-def analyze_text(text: str, contract_type: str, role: str, role_note: str = "",
-                 mode: str = "otomatik", file_name: str | None = None) -> dict:
-    """Sözleşme metnini analiz eder ve arayüzün beklediği raporu döndürür.
-
-    Geçersiz girdide ValueError fırlatır. Yapay zekâ hataları fırlatılmaz; kural raporuna dönülür.
-    mode: "otomatik" (yapay zekâ varsa kullan) ya da "kural" (yalnızca kural motoru).
-    """
-    if contract_type not in CONTRACT_TYPES:
-        raise ValueError("Geçersiz sözleşme türü.")
-    text = normalize_space(text or "")
-    if len(text) < config.MIN_TEXT_CHARS:
-        raise ValueError("Metin çok kısa; sözleşmenin tamamını yapıştırın.")
-    if len(text) > config.MAX_TEXT_CHARS:
-        raise ValueError(f"Metin çok uzun (en fazla {config.MAX_TEXT_CHARS:,} karakter).".replace(",", "."))
-
-    # KVKK: bundan sonraki hiçbir adım (kural motoru, yapay zekâ, rapor) ham metni görmez.
-    masked, pii_counts = mask_personal_data(text)
-    role = normalize_role(contract_type, role)
-    role_note = (role_note or "").strip()[:120]
+def prepare(text: str, contract_type: str = "otomatik", role: str = "otomatik"):
+    clean = normalize_space(text)
+    masked, mask_counts = mask_personal_data(clean)
+    ctype = contract_type if contract_type in CONTRACT_TYPES else detect_contract_type(masked)
+    role = normalize_role(ctype, role)
     clauses = split_clauses(masked)
+    return masked, mask_counts, ctype, role, clauses
 
-    report = rule_engine.analyze(masked, clauses, contract_type, role)
-    report["uyari"] = None
 
-    if mode == "kural":
-        pass
-    else:
+def _merge(ai_report: dict, rule_report: dict) -> list:
+    """Yapay zekâ bulgularına, yalnızca yüksek güvenli kural bulgularını ekler.
+
+    Kural bulgusu eklenir: yapay zekâ o maddeye hiç değinmemişse ve bulgu kanuna dayalı
+    ("yasaya aykırı olabilir") ya da yüksek riskliyse. Böylece kurallar güvenlik ağı olur ama
+    yaygın/standart maddeler sonuca gürültü olarak eklenmez.
+    """
+    findings = list(ai_report["bulgular"])
+    ai_clauses = {f["madde_id"] for f in findings}
+    for f in rule_report["bulgular"]:
+        if f["madde_id"] in ai_clauses:
+            continue
+        if f["gecerlilik"] == "gecersiz_olabilir" or f["risk"] == "yuksek":
+            findings.append(f)
+    return sort_findings(findings)
+
+
+def analyze(text: str, contract_type: str = "otomatik", role: str = "otomatik", mode: str = "otomatik",
+            role_note: str = "") -> dict:
+    role_note = (role_note or "").strip()[:120]
+    masked, mask_counts, ctype, role, clauses = prepare(text, contract_type, role)
+    rule_report = rule_engine.analyze(masked, clauses, ctype, role)
+
+    use_ai = mode != "kural" and ai_engine.is_enabled()
+    warning = None
+    report = rule_report
+    if mode == "ai" and not ai_engine.is_enabled():
+        warning = MSG_DETAILED_UNAVAILABLE
+
+    if use_ai:
         try:
-            ai_result = ai_engine.analyze_clauses(clauses, contract_type, role, role_note)
-            report = merge(report, ai_result, role)
-            report["ai_model"] = ai_result["model"]
-            report["ai_saglayici"] = ai_result["saglayici"]
-            report["uyari"] = None
-        except ai_engine.AIError as err:
-            report["uyari"] = _FALLBACK_NOTICES.get(err.kind, _FALLBACK_DEFAULT)
-        except Exception:  # beklenmeyen hata da kullanıcıyı raporsuz bırakmamalı
-            report["uyari"] = _FALLBACK_DEFAULT
+            ai = ai_engine.analyze(clauses, ctype, role, role_note)
+            findings = _merge(ai, rule_report)
+            missing = ai["eksik_maddeler"] or rule_report["eksik_maddeler"]
+            # Hesaplanan hatırlatma tarihleri (kural motoru) + yapay zekânın bulduğu tarihler
+            dates = rule_report["onemli_tarihler"] + [
+                d for d in ai["onemli_tarihler"]
+                if d["tarih"] not in {x["tarih"] for x in rule_report["onemli_tarihler"] if x["tarih"]}
+            ]
+            score = risk_score(findings, missing)
+            report = {
+                **rule_report,
+                "mod": "ai",
+                "genel_ozet": ai["genel_ozet"] or rule_report["genel_ozet"],
+                "risk_puani": score,
+                "risk_seviyesi": risk_label(score),
+                "sayilar": count_by_risk(findings),
+                "bulgular": findings,
+                "eksik_maddeler": missing,
+                "onemli_tarihler": dates,
+                "sorulacak_sorular": ai["sorulacak_sorular"] or suggested_questions(findings),
+            }
+        except ai_engine.AIError as exc:
+            log.warning("Ayrıntılı inceleme yapılamadı, temel kontrol gösteriliyor: %s", exc)
+            warning = MSG_DETAILED_UNAVAILABLE
 
-    if contract_type == "diger" and role_note:
-        report["rol_ad"] = role_note
-    else:
-        report["rol_ad"] = ROLES[contract_type][role]
+    if report["mod"] == "kural" and ctype == "diger" and not warning:
+        warning = MSG_OTHER_BASIC_ONLY
+    if role_note:
+        report["rol_ad"] = f"{report['rol_ad']}: {role_note}" if ctype != "diger" else role_note
+
     for f in report["bulgular"]:
         f.pop("_pos", None)
-    report.update({
+
+    return {
+        **report,
+        "uyari": warning,
+        "maskelenen_veriler": mask_counts,
         "metin": masked,
         "maddeler": [c.to_dict() for c in clauses],
-        "kvkk": pii_counts,
-        "dosya_adi": file_name,
-        "yasal_uyari": LEGAL_NOTICE,
-    })
-    return report
+        "roller": ROLES[ctype],
+        "yasal_uyari": DISCLAIMER,
+    }
+
+
+def answer_question(text: str, question: str, contract_type: str, role: str, history: list,
+                    role_note: str = "") -> dict:
+    masked, _, ctype, role, clauses = prepare(text, contract_type, role)
+    if ai_engine.is_enabled():
+        try:
+            answer = ai_engine.ask(question, clauses, ctype, role, history, (role_note or "").strip()[:120])
+            return {"cevap": answer, "mod": "ai", "ilgili_maddeler": _cited_ids(answer, clauses)}
+        except ai_engine.AIError as exc:
+            log.warning("Soru yapay zekâ ile cevaplanamadı: %s", exc)
+            return _keyword_answer(question, clauses, masked, ctype, role)
+    return _keyword_answer(question, clauses, masked, ctype, role)
+
+
+def _cited_ids(answer: str, clauses) -> list:
+    valid = {c.id for c in clauses}
+    return [i for i in dict.fromkeys(re.findall(r"\[(m\d+)\]", answer)) if i in valid]
+
+
+def _stem(word: str) -> str:
+    return word[:5]
+
+
+def _keyword_answer(question: str, clauses, masked: str, ctype: str, role: str) -> dict:
+    """Yapay zekâ yokken: soruyla en çok kelime örtüşen maddeleri bulur."""
+    stop = {"nasıl", "neden", "nedir", "olur", "olursa", "benim", "bana", "acaba", "mıyım", "miyim", "zaman", "kadar", "hangi"}
+    words = {_stem(w) for w in re.findall(r"[a-zçğıöşü]{4,}", tr_lower(question)) if w not in stop}
+    lows = {c.id: tr_lower(c.text) for c in clauses}
+    # Nadir kelimeler daha değerli (basit IDF ağırlığı): "kombi" tek maddede geçer, "öder" birçok maddede.
+    df = {w: sum(1 for low in lows.values() if w in low) for w in words}
+    scored = []
+    for c in clauses:
+        score = sum(1 / df[w] for w in words if df[w] and w in lows[c.id])
+        if score:
+            scored.append((score, c))
+    scored.sort(key=lambda x: -x[0])
+    top = [c for s, c in scored[:2] if s >= scored[0][0] * 0.5] if scored else []
+    if not top:
+        return {
+            "cevap": "Sorunuzla doğrudan ilgili bir madde bulunamadı. Sorunuzu sözleşmedeki kelimelerle "
+                     "yeniden yazmayı deneyin.",
+            "mod": "kural", "ilgili_maddeler": [],
+        }
+    ids = " ".join(f"[{c.id}]" for c in top)
+    answer = f"Bu konu sözleşmede şu maddelerde geçiyor: {ids}"
+    findings = rule_engine.analyze(masked, clauses, ctype, role)["bulgular"]
+    if findings:
+        notes = [f"{f['sade']} {f['oneri']}" for f in findings if f["madde_id"] == top[0].id][:1]
+        if notes:
+            answer += "\n\n" + notes[0]
+    answer += "\n\nBu cevap, sorunuzdaki kelimelerin geçtiği maddelere göre hazırlandı."
+    return {
+        "cevap": answer,
+        "mod": "kural",
+        "ilgili_maddeler": [c.id for c in top],
+    }
